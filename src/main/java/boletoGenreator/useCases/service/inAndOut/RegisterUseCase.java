@@ -8,6 +8,7 @@ import boletoGenreator.infrastructure.repository.UserRepository;
 import boletoGenreator.useCases.UseCase;
 import boletoGenreator.useCases.entity.user.EntityUser;
 import boletoGenreator.useCases.entity.user.EntityUserIntegrity;
+import jakarta.transaction.Transactional;
 import lombok.Value;
 
 @Service
@@ -22,6 +23,7 @@ public class RegisterUseCase implements UseCase<RegisterUseCase.InputValues, Reg
     }
 
     @Override
+    @Transactional
     public OutPutValues execute(InputValues input){
 
         String email = input.getData().getEmail();

@@ -1,6 +1,7 @@
 package boletoGenreator.useCases.entity;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 import boletoGenreator.useCases.entity.user.EntityUser;
 import jakarta.persistence.Column;
@@ -28,13 +29,13 @@ public class EntityBankBillet {
     private String typeContract;
 
     @Column()
-    private Long price;
+    private BigDecimal price;
 
     @Column(length = 2)
     private String stats;
 
-    @Column()
-    private LocalDateTime expirationDate;
+    @Column(name = "expirationDate", columnDefinition = "TEXT")
+    private Timestamp expirationDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

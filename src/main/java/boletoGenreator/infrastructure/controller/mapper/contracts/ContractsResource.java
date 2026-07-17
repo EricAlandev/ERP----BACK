@@ -18,7 +18,7 @@ import boletoGenreator.infrastructure.controller.dto.contract.SimulationResponse
 public interface ContractsResource {
     
     @PostMapping(ContractsEndpoints.DEAL)
-    public CompletableFuture<String> makeContract(DealContract contratData);
+    public CompletableFuture<String> makeContract(@RequestBody DealContract contratData);
 
     @PostMapping(ContractsEndpoints.SIMULATION)
     public CompletableFuture<SimulationResponse>Simulation(@RequestBody MakeContract contratData);

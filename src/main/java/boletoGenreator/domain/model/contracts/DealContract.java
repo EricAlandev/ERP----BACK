@@ -14,9 +14,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DealContract {
-    private String idClient;
+    private Long idClient;
+    private String nameClient;
     private BigDecimal priceInstallments;
     private Long QuantityInstallments;
-    private String price;
     private String BankBilletType;
 }

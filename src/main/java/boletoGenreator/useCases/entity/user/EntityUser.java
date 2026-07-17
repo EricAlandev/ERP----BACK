@@ -10,7 +10,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,21 +24,21 @@ public class EntityUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column()
+    @Column(length = 255)
     private String email;
 
-    @Column()
+    @Column(length = 100)
     private String password;
 
     @Column()
     private String birthday;
 
-    @Column()
+    @Column(length = 500)
     private String token;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<EntityBankBillet> billets;
 
-    @OneToOne(mappedBy = "userByIntegrity", cascade = CascadeType.ALL)
-    private EntityUserIntegrity integrity;
+    @OneToMany(mappedBy = "userByIntegrity", cascade = CascadeType.ALL)
+    private List<EntityUserIntegrity> integrity;
 }

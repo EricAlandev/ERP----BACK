@@ -26,8 +26,8 @@ public class Modules {
     }
 
     @Bean
-    public MakeContractUseCase makeContractUseCase(JwtAuthorization jwtAuthorization, UserRepository userRepository, BankBilletsRepository bankBilletsRepository){
-        return new MakeContractUseCase(jwtAuthorization, userRepository, bankBilletsRepository);
+    public MakeContractUseCase makeContractUseCase(UserRepository userRepository, BankBilletsRepository bankBilletsRepository){
+        return new MakeContractUseCase(userRepository, bankBilletsRepository);
     }
 
     @Bean
