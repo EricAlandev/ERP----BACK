@@ -1,6 +1,6 @@
-package boletoGenreator.useCases.entity.user;
+package boletoGenreator.useCases.entity.contracts;
 
-import jakarta.persistence.Column;
+import boletoGenreator.useCases.entity.EntityBankBillet;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,16 +14,18 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "userIntegrity")
-public class EntityUserIntegrity {
+@Table(name = "contractBillets")
+public class EntityContractBillet {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 3)
-    private String stats;
+    @ManyToOne
+    @JoinColumn(name = "contract_id")
+    private EntityContracts contracts;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private EntityUser userByIntegrity;
+    @JoinColumn(name = "bankBillet_id")
+    private EntityBankBillet bankBillets;
 }

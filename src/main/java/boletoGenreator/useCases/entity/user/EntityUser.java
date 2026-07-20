@@ -2,7 +2,7 @@ package boletoGenreator.useCases.entity.user;
 
 import java.util.List;
 
-import boletoGenreator.useCases.entity.EntityBankBillet;
+import boletoGenreator.useCases.entity.contracts.EntityContracts;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,10 +35,10 @@ public class EntityUser {
 
     @Column(length = 500)
     private String token;
-    
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<EntityBankBillet> billets;
 
     @OneToMany(mappedBy = "userByIntegrity", cascade = CascadeType.ALL)
     private List<EntityUserIntegrity> integrity;
+
+    @OneToMany(mappedBy = "contractsUser", cascade = CascadeType.ALL)
+    private List<EntityContracts> userContracts;
 }

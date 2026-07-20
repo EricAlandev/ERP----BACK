@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import boletoGenreator.infrastructure.repository.BankBilletsRepository;
 import boletoGenreator.infrastructure.repository.UserIntegrityRepository;
 import boletoGenreator.infrastructure.repository.UserRepository;
+import boletoGenreator.infrastructure.repository.contracts.ContractBilletsRepository;
+import boletoGenreator.infrastructure.repository.contracts.ContractRepository;
 import boletoGenreator.useCases.service.contracts.MakeContractUseCase;
 import boletoGenreator.useCases.service.contracts.SimulationUseCase;
 import boletoGenreator.useCases.service.inAndOut.LoginUseCase;
@@ -26,8 +28,8 @@ public class Modules {
     }
 
     @Bean
-    public MakeContractUseCase makeContractUseCase(UserRepository userRepository, BankBilletsRepository bankBilletsRepository){
-        return new MakeContractUseCase(userRepository, bankBilletsRepository);
+    public MakeContractUseCase makeContractUseCase(UserRepository userRepository, BankBilletsRepository bankBilletsRepository, UserIntegrityRepository userIntegrityRepository, ContractBilletsRepository contractBilletsRepository, ContractRepository contractRepository){
+        return new MakeContractUseCase(userRepository, bankBilletsRepository, userIntegrityRepository, contractBilletsRepository, contractRepository);
     }
 
     @Bean
