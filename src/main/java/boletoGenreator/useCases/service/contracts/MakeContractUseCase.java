@@ -6,7 +6,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.client.RestClient;
+
 import boletoGenreator.domain.model.contracts.DealContract;
+import boletoGenreator.infrastructure.controller.mapper.contracts.ContractsEndpoints;
 import boletoGenreator.infrastructure.repository.BankBilletsRepository;
 import boletoGenreator.infrastructure.repository.UserIntegrityRepository;
 import boletoGenreator.infrastructure.repository.UserRepository;
@@ -18,6 +22,7 @@ import boletoGenreator.useCases.entity.contracts.EntityContractBillet;
 import boletoGenreator.useCases.entity.contracts.EntityContracts;
 import boletoGenreator.useCases.entity.user.EntityUser;
 import boletoGenreator.useCases.entity.user.EntityUserIntegrity;
+import jakarta.transaction.Transactional;
 import lombok.Value;
 
 public class MakeContractUseCase implements UseCase<MakeContractUseCase.InputValues, MakeContractUseCase.OutPutValues> {
@@ -27,16 +32,19 @@ public class MakeContractUseCase implements UseCase<MakeContractUseCase.InputVal
     private final UserIntegrityRepository userIntegrityRepository;
     private final ContractRepository contractRepository;
     private final ContractBilletsRepository contractBilletsRepository;
+    private final RestClient restClient;
 
-    public MakeContractUseCase(UserRepository userRepository, BankBilletsRepository bankBilletsRepository, UserIntegrityRepository userIntegrityRepository, ContractBilletsRepository contractBilletsRepository, ContractRepository contractRepository){
+    public MakeContractUseCase(UserRepository userRepository, BankBilletsRepository bankBilletsRepository, UserIntegrityRepository userIntegrityRepository, ContractBilletsRepository contractBilletsRepository, ContractRepository contractRepository, RestClient restClient){
         this.userRepository = userRepository;
         this.bankBilletsRepository = bankBilletsRepository;
         this.userIntegrityRepository = userIntegrityRepository;
         this.contractBilletsRepository = contractBilletsRepository;
         this.contractRepository = contractRepository;
+        this.restClient = restClient;
     }
 
     @Override
+    @Transactional
     public OutPutValues execute(InputValues input){
         
         DealContract contractData = input.getContratData();
@@ -77,17 +85,28 @@ public class MakeContractUseCase implements UseCase<MakeContractUseCase.InputVal
             contractBilletsRepository.saveAll(pivoList);
         }
 
-        return new OutPutValues( "The user " + clientUser.getEmail() + " maked the contract");
+        //call the contractPDF
+        byte[] pdfBytes = restClient.post()
+                          .uri(ContractsEndpoints.ContractPDFGeneration)
+                          .header("Authorization", input.getToken())
+                          .contentType(MediaType.APPLICATION_JSON)
+                          .body(contractData)
+                          .retrieve()
+                          .body(byte[].class);   
+
+        return new OutPutValues(1, pdfBytes);
     }
 
     @Value
     public static class InputValues implements UseCase.InputValues{
         DealContract contratData;
+        String token;
     }
 
     @Value
     public static class OutPutValues implements UseCase.OutPutValues{
-        private String returnValue;
+        int codeStats;
+        byte[] pdfBytes;
     }
 
     public List<EntityContracts> searchContracts(EntityUser client) throws RuntimeException{
@@ -121,16 +140,16 @@ public class MakeContractUseCase implements UseCase<MakeContractUseCase.InputVal
 
             for(int y = 0; y < pivoBillets.size(); y++){
                 EntityBankBillet bankBillet = pivoBillets.get(y).getBankBillets();
-                    totalValue = totalValue.add(bankBillet.getPrice());
-                }
+                totalValue = totalValue.add(bankBillet.getPrice());
+            }
 
-                if(!isVip && totalValue.compareTo(new BigDecimal(5000)) >= 0){
-                    return false;
-                }
+            if(!isVip && totalValue.compareTo(new BigDecimal(5000)) >= 0){
+                return false;
+            }
 
-                else if(isVip && totalValue.compareTo(new BigDecimal(25000)) >= 0){
-                    return false;
-                }
+            else if(isVip && totalValue.compareTo(new BigDecimal(25000)) >= 0){
+                return false;
+            }
         }
 
         return true;

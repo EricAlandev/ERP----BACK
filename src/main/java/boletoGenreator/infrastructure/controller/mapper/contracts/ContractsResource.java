@@ -2,9 +2,11 @@ package boletoGenreator.infrastructure.controller.mapper.contracts;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,7 +20,10 @@ import boletoGenreator.infrastructure.controller.dto.contract.SimulationResponse
 public interface ContractsResource {
     
     @PostMapping(ContractsEndpoints.DEAL)
-    public CompletableFuture<String> makeContract(@RequestBody DealContract contratData);
+    public CompletableFuture<ResponseEntity<byte[]>> makeContract(@RequestBody DealContract contratData, @RequestHeader("Authorization") String token);
+
+    @PostMapping(ContractsEndpoints.CONTRACTPDF)
+    public CompletableFuture<byte[]> contractPDF(@RequestBody DealContract contractPDFdata);
 
     @PostMapping(ContractsEndpoints.SIMULATION)
     public CompletableFuture<SimulationResponse>Simulation(@RequestBody MakeContract contratData);
