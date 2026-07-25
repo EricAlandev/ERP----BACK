@@ -9,6 +9,8 @@ public class ParseTime {
 
         String formatedDate = now.format(formatter);
 
-        return formatedDate;
+        String brazilianFormat = formatedDate.replace("-", " / ");
+
+        return brazilianFormat;
     }
 }

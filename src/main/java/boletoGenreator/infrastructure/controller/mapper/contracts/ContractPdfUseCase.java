@@ -9,6 +9,7 @@ import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.element.Text;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 
@@ -37,17 +38,28 @@ public class ContractPdfUseCase implements UseCase<ContractPdfUseCase.InputValue
 
         //header
         createHeader(pdfData.getNameClient(), pdfData.getBankBilletType(), today, manageItext.getDocument());
+        createObservations(manageItext.getDocument());
 
-        BigDecimal priceLoan = BigDecimal.ZERO;
+        BigDecimal priceLoan = pdfData.getPriceInstallments().multiply(new BigDecimal(pdfData.getQuantityInstallments()));
+
+        Paragraph textInstallments  = new Paragraph("The client gonna pay " + pdfData.getQuantityInstallments() + " installments, and the loan gonna cost on total R$ " + priceLoan.setScale(2))
+        .setPadding(5)
+        .setTextAlignment(TextAlignment.RIGHT);
+
+        manageItext.getDocument().add(textInstallments);
+
+        String dateLastIntallment = ""; 
 
         //Generate the lines of the installments
         for(int i = 0; i < pdfData.getQuantityInstallments(); i++){
-            generateInstallmentLine(pdfData.getPriceInstallments(), today, manageItext.getDocument(), priceLoan, i);
+            dateLastIntallment = generateInstallmentLine(pdfData.getPriceInstallments(), today, manageItext.getDocument(), i);
         }
 
-        Paragraph textInstallments  = new Paragraph("The client gonna pay " + pdfData.getQuantityInstallments() + " installments, and the loan gonna cost on total " + priceLoan).setTextAlignment(TextAlignment.RIGHT);
+        //Text with the agreements
+        Paragraph textAboutDetails = new Paragraph("This contract gonna have the duration of " +  pdfData.getQuantityInstallments() + " months. Being you last installment on the day " + dateLastIntallment +".If you agree with the deal, sign with you signature on the empty field called 'CLIENT'")
+        .setPadding(5);
 
-        manageItext.getDocument().add(textInstallments);
+        manageItext.getDocument().add(textAboutDetails);
 
         //Signatures
         try {
@@ -85,18 +97,23 @@ public class ContractPdfUseCase implements UseCase<ContractPdfUseCase.InputValue
 
             signatureTables.setWidth(UnitValue.createPercentValue(100));
 
-            Image managerSignature = ItextFunctions.createImage("/contract/BankManagerSignature.png");
-
             Image clientSignature = ItextFunctions.createImage("/contract/ClientField.png");
 
-            signatureTables.addCell(managerSignature);
-            signatureTables.addCell(clientSignature);
+            Image managerSignature = ItextFunctions.createImage("/contract/BankManagerSignature.png");
 
+            Cell clientCell = new Cell().add(clientSignature)
+            .setBorder(null);
+            Cell managerCell = new Cell().add(managerSignature)
+            .setBorder(null);
+            
+            signatureTables.addCell(clientCell);
+            signatureTables.addCell(managerCell);
+            
             return signatureTables;
     }
 
 
-    public void generateInstallmentLine(BigDecimal priceInstallment, LocalDateTime today, Document document, BigDecimal priceLoan, int i){
+    public String generateInstallmentLine(BigDecimal priceInstallment, LocalDateTime today, Document document, int i){
 
         LocalDateTime dateInstallmente = today.plusDays(30 * i);
         String formatedDate = ParseTime.parseTime(dateInstallmente);
@@ -109,30 +126,46 @@ public class ContractPdfUseCase implements UseCase<ContractPdfUseCase.InputValue
 
         intallmentTable.setWidth(UnitValue.createPercentValue(100));
 
-        intallmentTable.addCell(new Cell().add(new Paragraph("Value Installmente : " + priceInstallment)));
+        intallmentTable.addCell(new Cell().add(new Paragraph("Value Installment : R$ " + priceInstallment.setScale(2))));
 
         intallmentTable.addCell(new Cell().add(new Paragraph("Date : " + formatedDate)));
 
         document.add(intallmentTable);
-        priceLoan = priceLoan.add(priceInstallment);
+
+        return formatedDate;
     }
 
     public void createHeader(String nameClient, String BankBilletType, LocalDateTime today, Document document){
-         UnitValue[] pdfHeader = {
-            UnitValue.createPercentValue(50),
-            UnitValue.createPercentValue(50)
-        };
 
-        Table headerContract = new Table(pdfHeader);
+        //Detail client
+        Paragraph clientParagragh = new Paragraph();
+        Text clientDataTittle = new Text("Client Details :")
+        .setFont(ItextFunctions.BoldFont());
+
+        clientParagragh.add(clientDataTittle);
+        document.add(clientParagragh);
+
+        Table headerContract = new Table(1);
 
         headerContract.setWidth(UnitValue.createPercentValue(100));
 
-        headerContract.addCell(new Cell().add(new Paragraph("Client Name : " + nameClient)));
+        headerContract.addCell(new Cell().add(new Paragraph("Client Name : " + nameClient)).setBorder(null));
 
-        headerContract.addCell(new Cell().add(new Paragraph("Type Contract : " + BankBilletType)));
+        headerContract.addCell(new Cell().add(new Paragraph("Type Contract : " + BankBilletType)).setBorder(null));
 
-        headerContract.addCell(new Cell().add(new Paragraph("Date Contract : " +  today)));
+        headerContract.addCell(new Cell().add(new Paragraph("Date Contract : " +  ParseTime.parseTime(today))).setBorder(null));
 
         document.add(headerContract);
+    }
+
+    public void createObservations(Document document){
+        Paragraph observations = new Paragraph();
+        Text ObservationTittle = new Text("Observations :\n").setFont(ItextFunctions.BoldFont());
+        Text textObservation = new Text("This is a contract paper to make a Loan. So, stay aware that youu gonna be in debit with us.");
+
+        observations.add(ObservationTittle);
+        observations.add(textObservation);
+
+        document.add(observations);
     }
 }
