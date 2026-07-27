@@ -60,6 +60,8 @@ public class MakeContractUseCase implements UseCase<MakeContractUseCase.InputVal
 
         Boolean userCanLoan = clientAvaibleToLoan(contracts, vipClient);
 
+        byte[] pdfBytes = null;
+
         if(userCanLoan){
             //create the list to receive all of the banks and pivos;
             List<EntityBankBillet> bankBilletsList = new ArrayList<>();
@@ -83,16 +85,22 @@ public class MakeContractUseCase implements UseCase<MakeContractUseCase.InputVal
             }
 
             contractBilletsRepository.saveAll(pivoList);
-        }
 
-        //call the contractPDF
-        byte[] pdfBytes = restClient.post()
+            //call the contractPDF
+            pdfBytes = restClient.post()
                           .uri(ContractsEndpoints.ContractPDFGeneration)
                           .header("Authorization", input.getToken())
                           .contentType(MediaType.APPLICATION_JSON)
                           .body(contractData)
                           .retrieve()
                           .body(byte[].class);   
+
+        }
+
+        else{
+            throw new RuntimeException("user are not abble to make a new Loan");
+        }
+
 
         return new OutPutValues(1, pdfBytes);
     }
@@ -143,7 +151,7 @@ public class MakeContractUseCase implements UseCase<MakeContractUseCase.InputVal
                 totalValue = totalValue.add(bankBillet.getPrice());
             }
 
-            if(!isVip && totalValue.compareTo(new BigDecimal(5000)) >= 0){
+            if(!isVip && totalValue.compareTo(new BigDecimal(1000)) >= 0){
                 return false;
             }
 
