@@ -2,6 +2,7 @@ package boletoGenreator.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.client.RestClient;
 
 import boletoGenreator.infrastructure.controller.mapper.contracts.ContractPdfUseCase;
@@ -11,6 +12,7 @@ import boletoGenreator.infrastructure.repository.UserRepository;
 import boletoGenreator.infrastructure.repository.contracts.ContractBilletsRepository;
 import boletoGenreator.infrastructure.repository.contracts.ContractRepository;
 import boletoGenreator.useCases.impl.user.UserCustomRepository;
+import boletoGenreator.useCases.impl.user.UserCustomRepositoryImpl;
 import boletoGenreator.useCases.service.contracts.MakeContractUseCase;
 import boletoGenreator.useCases.service.contracts.SimulationUseCase;
 import boletoGenreator.useCases.service.inAndOut.LoginUseCase;
@@ -54,6 +56,11 @@ public class Modules {
     public ContractPdfUseCase contractPdfUseCase(){
 
         return new ContractPdfUseCase();
+    }
+
+    @Bean
+    public UserCustomRepository userCustomRepository(JdbcTemplate jdbcTemplate){
+        return new UserCustomRepositoryImpl(jdbcTemplate);
     }
 
     @Bean

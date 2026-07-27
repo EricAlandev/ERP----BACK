@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import boletoGenreator.domain.model.users.UserSearch;
@@ -21,7 +22,7 @@ public class UserController implements UserResource {
     }
     
     @Override
-    public CompletableFuture<List<UserSearch>> findUsers(UserSearch searchData){
+    public CompletableFuture<List<UserSearch>> findUsers(@RequestBody UserSearch searchData){
 
         return ServiceExecute.execute(
             searchUsersUseCase, 

@@ -19,8 +19,12 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
     @Override
     public List<UserSearch> findUsers(UserSearch userSearch){
 
-        StringBuilder sql = new StringBuilder("SELECT * FROM  USERS WHERE 1 = 1");
+        StringBuilder sql = new StringBuilder("");
         List<Object> params = new ArrayList<>();
+
+        if(!userSearch.getEmail().equals("") || !userSearch.getIdUser().equals("")){
+            sql.append("SELECT * FROM  USERS WHERE 1 = 1");
+        }
 
         //make the querys
         if(StringUtil.notNullNorEmpty(userSearch.getEmail())){
