@@ -28,7 +28,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
         //make the querys
         if(StringUtil.notNullNorEmpty(userSearch.getEmail())){
-            sql.append(" AND EMAIL = ? ");
+            sql.append(" AND EMAIL LIKE %?% ");
             params.add(userSearch.getEmail());
         }
 

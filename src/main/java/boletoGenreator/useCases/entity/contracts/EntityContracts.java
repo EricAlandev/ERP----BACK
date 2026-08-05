@@ -1,4 +1,5 @@
 package boletoGenreator.useCases.entity.contracts;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import boletoGenreator.useCases.entity.user.EntityUser;
@@ -27,6 +28,9 @@ public class EntityContracts {
 
     @Column(length = 55)
     private String typeContract;
+
+    @Column()
+    private LocalDateTime dateContract;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

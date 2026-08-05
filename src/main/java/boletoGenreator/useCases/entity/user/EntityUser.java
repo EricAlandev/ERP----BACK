@@ -1,5 +1,6 @@
 package boletoGenreator.useCases.entity.user;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import boletoGenreator.useCases.entity.contracts.EntityContracts;
@@ -31,7 +32,7 @@ public class EntityUser {
     private String password;
 
     @Column()
-    private String birthday;
+    private LocalDateTime birthday;
 
     @Column(length = 500)
     private String token;

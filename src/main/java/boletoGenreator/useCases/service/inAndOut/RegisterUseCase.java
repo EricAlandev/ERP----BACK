@@ -1,8 +1,11 @@
 package boletoGenreator.useCases.service.inAndOut;
 
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Service;
 
 import boletoGenreator.domain.model.InAndOut.RegisterData;
+import boletoGenreator.infrastructure.controller.dto.generic.ParseTime;
 import boletoGenreator.infrastructure.repository.UserIntegrityRepository;
 import boletoGenreator.infrastructure.repository.UserRepository;
 import boletoGenreator.useCases.UseCase;
@@ -33,7 +36,9 @@ public class RegisterUseCase implements UseCase<RegisterUseCase.InputValues, Reg
         EntityUser user = new EntityUser();
         user.setEmail(email);
         user.setPassword(password);
-        user.setBirthday(birthday);
+
+        LocalDateTime now = ParseTime.parseTolocal(birthday);
+        user.setBirthday(now);
 
         userRepository.save(user);
 

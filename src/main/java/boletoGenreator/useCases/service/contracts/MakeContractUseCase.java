@@ -93,8 +93,7 @@ public class MakeContractUseCase implements UseCase<MakeContractUseCase.InputVal
                           .contentType(MediaType.APPLICATION_JSON)
                           .body(contractData)
                           .retrieve()
-                          .body(byte[].class);   
-
+                          .body(byte[].class);
         }
 
         else{
@@ -178,8 +177,11 @@ public class MakeContractUseCase implements UseCase<MakeContractUseCase.InputVal
     public EntityContracts createContract(DealContract contractData,EntityUser clientUser){
             EntityContracts contract = new EntityContracts();
 
+            LocalDateTime timeNow = LocalDateTime.now(); 
+
             contract.setTypeContract(contractData.getBankBilletType());
             contract.setContractsUser(clientUser);
+            contract.setDateContract(timeNow);
                 
             contractRepository.save(contract);
 
