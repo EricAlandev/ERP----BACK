@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import boletoGenreator.domain.model.contracts.DealContract;
 import boletoGenreator.domain.model.contracts.MakeContract;
 import boletoGenreator.infrastructure.controller.dto.contract.SimulationResponse;
+import jakarta.websocket.server.PathParam;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173/")
@@ -24,6 +25,10 @@ public interface ContractsResource {
 
     @PostMapping(ContractsEndpoints.CONTRACTPDF)
     public CompletableFuture<byte[]> contractPDF(@RequestBody DealContract contractPDFdata);
+
+    @PostMapping(ContractsEndpoints.REPRINT_CONRTACT)
+    public CompletableFuture<byte[]> reprintContract(@PathParam("id") String idContract);
+
 
     @PostMapping(ContractsEndpoints.SIMULATION)
     public CompletableFuture<SimulationResponse>Simulation(@RequestBody MakeContract contratData);

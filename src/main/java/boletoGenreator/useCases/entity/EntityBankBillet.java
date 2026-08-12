@@ -19,14 +19,14 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "bankBillets")
+@Table(name = "bankbillets")
 public class EntityBankBillet {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 55)
+    @Column(length = 55, name = "typecontract")
     private String typeContract;
 
     @Column()
@@ -35,7 +35,7 @@ public class EntityBankBillet {
     @Column(length = 2)
     private String stats;
 
-    @Column(name = "expirationDate", columnDefinition = "TEXT")
+    @Column(name = "expirationdate", columnDefinition = "TEXT")
     private Timestamp expirationDate;
 
     //Pivo between the contracts + bankBillets

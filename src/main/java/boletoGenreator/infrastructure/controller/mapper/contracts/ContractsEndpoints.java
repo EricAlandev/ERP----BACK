@@ -7,6 +7,8 @@ public class ContractsEndpoints {
     public static final String CONTRACTPDF = "/contractPDF";
     public static final String SIMULATION = "/simulation/{id}";
 
+    public static final String REPRINT_CONRTACT = "/reprint/contract/{id}";
+
     //for calls by the backend
     public static final String ContractPDFGeneration = "/contract/contractPDF";
 }

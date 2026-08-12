@@ -21,11 +21,13 @@ public class ContractsController implements ContractsResource{
     private final MakeContractUseCase makeContractUseCase;
     private final SimulationUseCase simulationUseCase;
     private final ContractPdfUseCase contractPdfUseCase;
+    private final ReprintContractPdfUseCase reprintContractPdfUseCase;
  
-    public ContractsController(MakeContractUseCase makeContractUseCase, SimulationUseCase simulationUseCase, ContractPdfUseCase contractPdfUseCase){
+    public ContractsController(MakeContractUseCase makeContractUseCase, SimulationUseCase simulationUseCase, ContractPdfUseCase contractPdfUseCase, ReprintContractPdfUseCase reprintContractPdfUseCase){
         this.makeContractUseCase = makeContractUseCase;
         this.simulationUseCase = simulationUseCase;
         this.contractPdfUseCase = contractPdfUseCase;
+        this.reprintContractPdfUseCase = reprintContractPdfUseCase;
     }
     
     @Override
@@ -56,5 +58,14 @@ public class ContractsController implements ContractsResource{
             new SimulationUseCase.InputValues(contratData), 
             (output) -> SimulationResponse.from(output.getTaxes(), output.getQuantityInstallments(), output.getClientData(), output.getStatsToFront(), output.getPrice(), output.getBankBilletType())
         );
+    }
+
+    @Override
+    public CompletableFuture<byte[]> reprintContract(String idContract){
+
+        return ServiceExecute.execute(
+            reprintContractPdfUseCase,
+            new ReprintContractPdfUseCase.InputValues(idContract), 
+            (output) -> output.getPdf());
     }
 }

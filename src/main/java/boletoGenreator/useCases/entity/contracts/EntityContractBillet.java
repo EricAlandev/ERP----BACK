@@ -14,7 +14,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "contractBillets")
+@Table(name = "contractbillets")
 public class EntityContractBillet {
     
     @Id
@@ -26,6 +26,6 @@ public class EntityContractBillet {
     private EntityContracts contracts;
 
     @ManyToOne
-    @JoinColumn(name = "bankBillet_id")
+    @JoinColumn(name = "bankbillet_id")
     private EntityBankBillet bankBillets;
 }

@@ -9,6 +9,7 @@ import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClient;
 
+import boletoGenreator.domain.model.contracts.ContractData;
 import boletoGenreator.domain.model.contracts.DealContract;
 import boletoGenreator.infrastructure.controller.mapper.contracts.ContractsEndpoints;
 import boletoGenreator.infrastructure.repository.BankBilletsRepository;
@@ -86,7 +87,11 @@ public class MakeContractUseCase implements UseCase<MakeContractUseCase.InputVal
 
             contractBilletsRepository.saveAll(pivoList);
 
-            //call the contractPDF
+            ContractData objectContract = new ContractData();
+
+            objectContract.setIdContract(null);
+
+            //call the contractPDF with the data that got saved;/
             pdfBytes = restClient.post()
                           .uri(ContractsEndpoints.ContractPDFGeneration)
                           .header("Authorization", input.getToken())
@@ -123,8 +128,8 @@ public class MakeContractUseCase implements UseCase<MakeContractUseCase.InputVal
         //pick loan contracts
         for(EntityContracts contract: contracts){
             if(contract.getTypeContract().equals(ContractProps.LT) 
-                || contract.getTypeContract().equals(ContractProps.MT) 
-              ){
+                    || contract.getTypeContract().equals(ContractProps.MT) 
+            ){
                 loanContracts.add(contract);
             }
         }

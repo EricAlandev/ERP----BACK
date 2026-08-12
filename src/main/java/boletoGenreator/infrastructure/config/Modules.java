@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.client.RestClient;
 
 import boletoGenreator.infrastructure.controller.mapper.contracts.ContractPdfUseCase;
+import boletoGenreator.infrastructure.controller.mapper.contracts.ReprintContractPdfUseCase;
 import boletoGenreator.infrastructure.repository.BankBilletsRepository;
 import boletoGenreator.infrastructure.repository.UserIntegrityRepository;
 import boletoGenreator.infrastructure.repository.UserRepository;
@@ -58,6 +59,11 @@ public class Modules {
     public ContractPdfUseCase contractPdfUseCase(){
 
         return new ContractPdfUseCase();
+    }
+
+    @Bean
+    public ReprintContractPdfUseCase ReprintContractPdfUseCase(UserCustomRepository userCustomRepository){
+        return new ReprintContractPdfUseCase(userCustomRepository);
     }
 
     @Bean

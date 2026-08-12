@@ -26,10 +26,10 @@ public class EntityContracts {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 55)
+    @Column(length = 55, name = "typecontract")
     private String typeContract;
 
-    @Column()
+    @Column(name = "datecontract")
     private LocalDateTime dateContract;
 
     @ManyToOne
