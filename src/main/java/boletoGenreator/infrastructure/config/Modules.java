@@ -6,7 +6,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.client.RestClient;
 
 import boletoGenreator.infrastructure.controller.mapper.contracts.ContractPdfUseCase;
-import boletoGenreator.infrastructure.controller.mapper.contracts.ReprintContractPdfUseCase;
 import boletoGenreator.infrastructure.repository.BankBilletsRepository;
 import boletoGenreator.infrastructure.repository.UserIntegrityRepository;
 import boletoGenreator.infrastructure.repository.UserRepository;
@@ -45,9 +44,9 @@ public class Modules {
     }
 
     @Bean
-    public MakeContractUseCase makeContractUseCase(UserRepository userRepository, BankBilletsRepository bankBilletsRepository, UserIntegrityRepository userIntegrityRepository, ContractBilletsRepository contractBilletsRepository, ContractRepository contractRepository, RestClient restClient){
+    public MakeContractUseCase makeContractUseCase(UserRepository userRepository, BankBilletsRepository bankBilletsRepository, UserIntegrityRepository userIntegrityRepository, ContractBilletsRepository contractBilletsRepository, ContractRepository contractRepository){
 
-        return new MakeContractUseCase(userRepository, bankBilletsRepository, userIntegrityRepository, contractBilletsRepository, contractRepository, restClient);
+        return new MakeContractUseCase(userRepository, bankBilletsRepository, userIntegrityRepository, contractBilletsRepository, contractRepository);
     }
 
     @Bean
@@ -56,19 +55,14 @@ public class Modules {
     }
 
     @Bean
-    public ContractPdfUseCase contractPdfUseCase(){
-
-        return new ContractPdfUseCase();
-    }
-
-    @Bean
-    public ReprintContractPdfUseCase ReprintContractPdfUseCase(UserCustomRepository userCustomRepository){
-        return new ReprintContractPdfUseCase(userCustomRepository);
-    }
-
-    @Bean
     public UserCustomRepository userCustomRepository(JdbcTemplate jdbcTemplate){
         return new UserCustomRepositoryImpl(jdbcTemplate);
+    }
+
+    @Bean
+    public ContractPdfUseCase contractPdfUseCase(UserCustomRepository userCustomRepository){
+
+        return new ContractPdfUseCase(userCustomRepository);
     }
 
     @Bean

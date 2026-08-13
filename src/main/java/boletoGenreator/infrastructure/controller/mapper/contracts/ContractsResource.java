@@ -6,12 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import boletoGenreator.domain.model.contracts.DealContract;
 import boletoGenreator.domain.model.contracts.MakeContract;
+import boletoGenreator.domain.model.contracts.MakeContractResponse;
 import boletoGenreator.infrastructure.controller.dto.contract.SimulationResponse;
 import jakarta.websocket.server.PathParam;
 
@@ -21,14 +21,10 @@ import jakarta.websocket.server.PathParam;
 public interface ContractsResource {
     
     @PostMapping(ContractsEndpoints.DEAL)
-    public CompletableFuture<ResponseEntity<byte[]>> makeContract(@RequestBody DealContract contratData, @RequestHeader("Authorization") String token);
+    public CompletableFuture<MakeContractResponse> makeContract(@RequestBody DealContract contratData);
 
     @PostMapping(ContractsEndpoints.CONTRACTPDF)
-    public CompletableFuture<byte[]> contractPDF(@RequestBody DealContract contractPDFdata);
-
-    @PostMapping(ContractsEndpoints.REPRINT_CONRTACT)
-    public CompletableFuture<byte[]> reprintContract(@PathParam("id") String idContract);
-
+    public CompletableFuture<ResponseEntity<byte[]>> contractPDF(@PathParam("id") String idContract);
 
     @PostMapping(ContractsEndpoints.SIMULATION)
     public CompletableFuture<SimulationResponse>Simulation(@RequestBody MakeContract contratData);

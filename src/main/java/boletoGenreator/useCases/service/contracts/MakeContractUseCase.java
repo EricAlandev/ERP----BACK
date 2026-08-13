@@ -6,12 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.client.RestClient;
-
-import boletoGenreator.domain.model.contracts.ContractData;
 import boletoGenreator.domain.model.contracts.DealContract;
-import boletoGenreator.infrastructure.controller.mapper.contracts.ContractsEndpoints;
 import boletoGenreator.infrastructure.repository.BankBilletsRepository;
 import boletoGenreator.infrastructure.repository.UserIntegrityRepository;
 import boletoGenreator.infrastructure.repository.UserRepository;
@@ -33,15 +28,13 @@ public class MakeContractUseCase implements UseCase<MakeContractUseCase.InputVal
     private final UserIntegrityRepository userIntegrityRepository;
     private final ContractRepository contractRepository;
     private final ContractBilletsRepository contractBilletsRepository;
-    private final RestClient restClient;
 
-    public MakeContractUseCase(UserRepository userRepository, BankBilletsRepository bankBilletsRepository, UserIntegrityRepository userIntegrityRepository, ContractBilletsRepository contractBilletsRepository, ContractRepository contractRepository, RestClient restClient){
+    public MakeContractUseCase(UserRepository userRepository, BankBilletsRepository bankBilletsRepository, UserIntegrityRepository userIntegrityRepository, ContractBilletsRepository contractBilletsRepository, ContractRepository contractRepository){
         this.userRepository = userRepository;
         this.bankBilletsRepository = bankBilletsRepository;
         this.userIntegrityRepository = userIntegrityRepository;
         this.contractBilletsRepository = contractBilletsRepository;
         this.contractRepository = contractRepository;
-        this.restClient = restClient;
     }
 
     @Override
@@ -61,7 +54,7 @@ public class MakeContractUseCase implements UseCase<MakeContractUseCase.InputVal
 
         Boolean userCanLoan = clientAvaibleToLoan(contracts, vipClient);
 
-        byte[] pdfBytes = null;
+        Long idContract = -1L;
 
         if(userCanLoan){
             //create the list to receive all of the banks and pivos;
@@ -70,6 +63,8 @@ public class MakeContractUseCase implements UseCase<MakeContractUseCase.InputVal
 
             //create contract
             EntityContracts contract = createContract(contractData, clientUser);
+
+            idContract = contract.getId();
 
             //save bankBillets on DB;
             for(int i = 1; i <= contractData.getQuantityInstallments(); i++){
@@ -86,19 +81,6 @@ public class MakeContractUseCase implements UseCase<MakeContractUseCase.InputVal
             }
 
             contractBilletsRepository.saveAll(pivoList);
-
-            ContractData objectContract = new ContractData();
-
-            objectContract.setIdContract(null);
-
-            //call the contractPDF with the data that got saved;/
-            pdfBytes = restClient.post()
-                          .uri(ContractsEndpoints.ContractPDFGeneration)
-                          .header("Authorization", input.getToken())
-                          .contentType(MediaType.APPLICATION_JSON)
-                          .body(contractData)
-                          .retrieve()
-                          .body(byte[].class);
         }
 
         else{
@@ -106,19 +88,18 @@ public class MakeContractUseCase implements UseCase<MakeContractUseCase.InputVal
         }
 
 
-        return new OutPutValues(1, pdfBytes);
+        return new OutPutValues("Contract Dealed!", idContract);
     }
 
     @Value
     public static class InputValues implements UseCase.InputValues{
         DealContract contratData;
-        String token;
     }
 
     @Value
     public static class OutPutValues implements UseCase.OutPutValues{
-        int codeStats;
-        byte[] pdfBytes;
+        private String message;
+        private Long idContract;
     }
 
     public List<EntityContracts> searchContracts(EntityUser client) throws RuntimeException{
@@ -217,4 +198,7 @@ public class MakeContractUseCase implements UseCase<MakeContractUseCase.InputVal
 
         return contractBillet;
     }
+
+
+
 }

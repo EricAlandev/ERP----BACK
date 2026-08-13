@@ -1,6 +1,8 @@
 package boletoGenreator.domain.model.contracts;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import boletoGenreator.domain.model.contracts.client.ClientPreData;
@@ -29,9 +31,9 @@ public class ContractData extends ClientPreData {
     @AllArgsConstructor
     public static class BankBillet{
         private Long id;
-        private Long price;
+        private BigDecimal price;
         private String stats;
         private String typeContract;
-        private Timestamp expirationdate;
+        private LocalDateTime expirationdate;
     }
 }

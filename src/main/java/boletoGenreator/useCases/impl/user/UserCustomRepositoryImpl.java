@@ -103,14 +103,12 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
         Gson objectMapper = new Gson();
 
         try {
-            Type listType = new TypeToken<List<ContractData>>() {}.getType();
+            Type listType = new TypeToken<List<ContractData.BankBillet>>() {}.getType();
 
             return objectMapper.fromJson(array, listType);
             
         } catch (Exception e) {
             throw new RuntimeException("Fail to pick the bank Billets of the contract;");
         }
-
     } 
-
 }

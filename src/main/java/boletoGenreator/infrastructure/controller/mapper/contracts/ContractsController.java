@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import boletoGenreator.domain.model.contracts.DealContract;
 import boletoGenreator.domain.model.contracts.MakeContract;
+import boletoGenreator.domain.model.contracts.MakeContractResponse;
 import boletoGenreator.infrastructure.controller.dto.contract.SimulationResponse;
 import boletoGenreator.infrastructure.controller.dto.pdfs.PdfResponse;
 import boletoGenreator.useCases.ServiceExecute;
@@ -21,32 +22,30 @@ public class ContractsController implements ContractsResource{
     private final MakeContractUseCase makeContractUseCase;
     private final SimulationUseCase simulationUseCase;
     private final ContractPdfUseCase contractPdfUseCase;
-    private final ReprintContractPdfUseCase reprintContractPdfUseCase;
- 
-    public ContractsController(MakeContractUseCase makeContractUseCase, SimulationUseCase simulationUseCase, ContractPdfUseCase contractPdfUseCase, ReprintContractPdfUseCase reprintContractPdfUseCase){
+
+    public ContractsController(MakeContractUseCase makeContractUseCase, SimulationUseCase simulationUseCase, ContractPdfUseCase contractPdfUseCase){
         this.makeContractUseCase = makeContractUseCase;
         this.simulationUseCase = simulationUseCase;
         this.contractPdfUseCase = contractPdfUseCase;
-        this.reprintContractPdfUseCase = reprintContractPdfUseCase;
     }
     
     @Override
-    public CompletableFuture<ResponseEntity<byte[]>> makeContract(DealContract contratData, String token){
+    public CompletableFuture<MakeContractResponse> makeContract(DealContract contratData){
 
         return ServiceExecute.execute(
             makeContractUseCase, 
-            new MakeContractUseCase.InputValues(contratData, token), 
-            (output) -> PdfResponse.from(output.getPdfBytes(), null)
+            new MakeContractUseCase.InputValues(contratData), 
+            (output) -> MakeContractResponse.from(output.getMessage(), output.getIdContract())
         );
     }
 
     @Override
-    public CompletableFuture<byte[]> contractPDF(DealContract contractPDFdata){
+    public CompletableFuture<ResponseEntity<byte[]>> contractPDF(String idContract){
 
         return ServiceExecute.execute(
             contractPdfUseCase, 
-            new ContractPdfUseCase.InputValues(contractPDFdata), 
-            (output) -> output.getPdf()
+            new ContractPdfUseCase.InputValues(idContract), 
+            (output) -> PdfResponse.from(output.getPdf(), null)
         );
     }
 
@@ -58,14 +57,5 @@ public class ContractsController implements ContractsResource{
             new SimulationUseCase.InputValues(contratData), 
             (output) -> SimulationResponse.from(output.getTaxes(), output.getQuantityInstallments(), output.getClientData(), output.getStatsToFront(), output.getPrice(), output.getBankBilletType())
         );
-    }
-
-    @Override
-    public CompletableFuture<byte[]> reprintContract(String idContract){
-
-        return ServiceExecute.execute(
-            reprintContractPdfUseCase,
-            new ReprintContractPdfUseCase.InputValues(idContract), 
-            (output) -> output.getPdf());
     }
 }
