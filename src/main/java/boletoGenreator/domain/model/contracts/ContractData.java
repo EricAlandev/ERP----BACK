@@ -33,7 +33,7 @@ public class ContractData extends ClientPreData {
         private Long id;
         private BigDecimal price;
         private String stats;
-        private String typeContract;
+        private String typecontract;
         private LocalDateTime expirationdate;
     }
 }

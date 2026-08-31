@@ -31,7 +31,6 @@ public class ContractPdfUseCase implements UseCase<ContractPdfUseCase.InputValue
         this.userCustomRepository = userCustomRepository;
     }
 
-
     @Transactional
     @Override
     public OutPutValues execute(InputValues input){
@@ -102,7 +101,7 @@ public class ContractPdfUseCase implements UseCase<ContractPdfUseCase.InputValue
     }
 
     public ContractData findContractData(String idContract){
-       List<ContractData> ContractData = userCustomRepository.findContractData(Long.parseLong(idContract));
+        List<ContractData> ContractData = userCustomRepository.findContractData(Long.parseLong(idContract));
 
        ContractData contract = ContractData.get(0);
         

@@ -4,7 +4,7 @@ public class ContractsEndpoints {
     
     public static final String CONTRACT = "/contract";
     public static final String DEAL = "/deal";
-    public static final String CONTRACTPDF = "/contract/{id}/pdf";
+    public static final String CONTRACTPDF = "/{id}/pdf";
     public static final String SIMULATION = "/simulation/{id}";
 
     //for calls by the backend
