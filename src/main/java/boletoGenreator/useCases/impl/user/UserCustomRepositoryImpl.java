@@ -1,6 +1,7 @@
 package boletoGenreator.useCases.impl.user;
 
 import java.lang.reflect.Type;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +42,16 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                 "c.typecontract, " +
                 "c.datecontract";
 
+    private static final String FIND_INSTALLMENTS_CONTRACT = "SELECT i.bankbillet_id, " +
+             "       i.typecontract, " +
+             "       i.price, i.stats, " +
+             "       i.expirationdate " +
+             "FROM (" +
+             "    SELECT * FROM contractbillets cb " +
+             "    LEFT JOIN bankbillets bb ON bb.id = cb.bankbillet_id " +
+             "    WHERE contract_id = ?" +
+             ") AS i";
+
     @Override
     public List<UserSearch> findUsers(UserSearch userSearch){
 
@@ -53,7 +64,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
         //make the querys
         if(StringUtil.notNullNorEmpty(userSearch.getEmail())){
-            sql.append(" AND EMAIL LIKE %?% ");
+            sql.append(" AND EMAIL LIKE '%' || ? || '%' ");
             params.add(userSearch.getEmail());
         }
 
@@ -81,7 +92,6 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
         sql.append(UserCustomRepositoryImpl.FIND_USER_CONTRACT_DATA);
         params.add(id);
 
-        System.out.println("SQL " + sql + " id Contract: " + id);
 
         return jdbcTemplate.query(
             sql.toString(),
@@ -90,19 +100,39 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
             .nameClient(rs.getString("email"))
             .idContract(rs.getLong("id_contract"))
             .typeContract(rs.getString("typeContract"))
-            .datecontract(rs.getTimestamp("expirationdate"))
-            .bankBillets(organizeBankBillet(rs.getString("bankBillets")))
+            .datecontract(rs.getObject("expirationdate", Timestamp.class))
+            .bankBillets(organizeBankBillet(rs.getString("bankBillets"), ContractData.BankBillet.class))
             .build(), 
             params.toArray()
         );
     }
 
+    @Override 
+    public List<ContractData.BankBillet> findInstallments(Long id){
+        StringBuffer sql = new StringBuffer();
+        List<Object> params = new ArrayList<>();
 
-    public List<ContractData.BankBillet> organizeBankBillet(String array){
+        sql.append(FIND_INSTALLMENTS_CONTRACT);
+        params.add(id);
+
+         return jdbcTemplate.query(
+            sql.toString(),
+             (rs, rowNum) -> ContractData.BankBillet.builder()
+             .id(rs.getLong("bankbillet_id"))
+             .price(rs.getBigDecimal("price"))
+             .stats(rs.getString("stats"))
+             .typecontract(rs.getString("typecontract"))
+             .expirationdate(rs.getObject("expirationdate", LocalDateTime.class))
+             .build(),
+            params.toArray()
+         );
+    }
+
+
+    public <T> List<T> organizeBankBillet(String array, Class<T> objectType){
 
         if(array == null || array.isEmpty() || "[null]".equals(array)){
-            List<ContractData.BankBillet> emptyArray =  new ArrayList<>();
-            return emptyArray;
+            return null;
         }
 
         Gson objectMapper = new GsonBuilder()
@@ -111,7 +141,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
         .create();
 
         try {
-            Type listType = new TypeToken<List<ContractData.BankBillet>>() {}.getType();
+            Type listType = TypeToken.getParameterized(List.class, objectType).getType();
 
             return objectMapper.fromJson(array, listType);
             

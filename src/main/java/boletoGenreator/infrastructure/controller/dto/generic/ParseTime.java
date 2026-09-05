@@ -17,7 +17,7 @@ public class ParseTime {
     }
 
     public static DateTimeFormatter formater(String format){
-        return  DateTimeFormatter.ofPattern(format + " HH:mm:ss");
+        return  DateTimeFormatter.ofPattern(format);
     }
 
     public static String formatAndReplace(String date){

@@ -2,6 +2,7 @@ package boletoGenreator.infrastructure.controller.mapper.contracts;
 
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -43,10 +44,8 @@ public class ContractPdfUseCase implements UseCase<ContractPdfUseCase.InputValue
         Paragraph Tittle = new Paragraph("Contract Paper").setTextAlignment(TextAlignment.CENTER);
         manageItext.getDocument().add(Tittle);
 
-        LocalDateTime today = LocalDateTime.now();
-
         //header
-        createHeader(contract.getNameClient(), contract.getTypeContract(), today, manageItext.getDocument());
+        createHeader(contract.getNameClient(), contract.getTypeContract(), contract.getDatecontract() , manageItext.getDocument());
         createObservations(manageItext.getDocument());
 
         //verify the installment prices and quantity of Installments 
@@ -159,7 +158,7 @@ public class ContractPdfUseCase implements UseCase<ContractPdfUseCase.InputValue
         return formatedDate;
     }
 
-    public void createHeader(String nameClient, String BankBilletType, LocalDateTime today, Document document){
+    public void createHeader(String nameClient, String BankBilletType, Timestamp date, Document document){
 
         //Detail client
         Paragraph clientParagragh = new Paragraph();
@@ -177,7 +176,9 @@ public class ContractPdfUseCase implements UseCase<ContractPdfUseCase.InputValue
 
         headerContract.addCell(new Cell().add(new Paragraph("Type Contract : " + BankBilletType)).setBorder(null));
 
-        headerContract.addCell(new Cell().add(new Paragraph("Date Contract : " +  ParseTime.parseTime(today))).setBorder(null));
+        LocalDateTime parsedDate = date.toLocalDateTime();
+        
+        headerContract.addCell(new Cell().add(new Paragraph("Date Contract : " +  ParseTime.parseTime(parsedDate))).setBorder(null));
 
         document.add(headerContract);
     }

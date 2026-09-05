@@ -1,5 +1,6 @@
 package boletoGenreator.infrastructure.controller.mapper.contracts;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.http.ResponseEntity;
@@ -10,10 +11,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import boletoGenreator.domain.model.contracts.ContractData;
 import boletoGenreator.domain.model.contracts.DealContract;
 import boletoGenreator.domain.model.contracts.MakeContract;
 import boletoGenreator.domain.model.contracts.MakeContractResponse;
 import boletoGenreator.infrastructure.controller.dto.contract.SimulationResponse;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173/")
@@ -28,4 +32,8 @@ public interface ContractsResource {
 
     @PostMapping(ContractsEndpoints.SIMULATION)
     public CompletableFuture<SimulationResponse>Simulation(@RequestBody MakeContract contratData);
+
+    @GetMapping(ContractsEndpoints.INSTALLMENTS)
+    public CompletableFuture<List<ContractData.BankBillet>> InstallmentsContract(@PathVariable("id") String idContract);
+    
 }

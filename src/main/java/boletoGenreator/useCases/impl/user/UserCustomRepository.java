@@ -10,4 +10,6 @@ public interface UserCustomRepository {
     List<UserSearch> findUsers(UserSearch userSearch); 
     
     List<ContractData> findContractData(Long id);
+
+    List<ContractData.BankBillet> findInstallments(Long id);
 }

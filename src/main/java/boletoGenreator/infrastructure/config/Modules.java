@@ -13,7 +13,6 @@ import boletoGenreator.infrastructure.repository.contracts.ContractBilletsReposi
 import boletoGenreator.infrastructure.repository.contracts.ContractRepository;
 import boletoGenreator.useCases.impl.user.UserCustomRepository;
 import boletoGenreator.useCases.impl.user.UserCustomRepositoryImpl;
-import boletoGenreator.useCases.service.bankBillet.ContractInstallmentsUseCase;
 import boletoGenreator.useCases.service.contracts.MakeContractUseCase;
 import boletoGenreator.useCases.service.contracts.SimulationUseCase;
 import boletoGenreator.useCases.service.inAndOut.LoginUseCase;
@@ -76,8 +75,8 @@ public class Modules {
         return new UserPageUseCase(userRepository);
     }
 
-    @Bean
-    public ContractInstallmentsUseCase contractInstallmentsUseCase(ContractRepository contractRepository,  ContractBilletsRepository contractBilletsRepository){
-        return new ContractInstallmentsUseCase(contractRepository, contractBilletsRepository);
+    @Bean 
+    public boletoGenreator.useCases.service.contracts.ContractInstallmentsUseCase contractInstallmentsUseCase (UserCustomRepository userCustomRepository){
+        return new boletoGenreator.useCases.service.contracts.ContractInstallmentsUseCase(userCustomRepository);
     }
 }
