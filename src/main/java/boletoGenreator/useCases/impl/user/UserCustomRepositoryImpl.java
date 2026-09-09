@@ -149,4 +149,5 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
             throw new RuntimeException("Fail to pick the bank Billets of the contract;");
         }
     } 
+
 }

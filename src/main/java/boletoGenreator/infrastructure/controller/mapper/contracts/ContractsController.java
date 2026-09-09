@@ -75,4 +75,14 @@ public class ContractsController implements ContractsResource{
             (output) -> output.getInstallments()
         );
     }
+
+    @Override
+    public CompletableFuture<ResponseEntity<byte[]>> installmentPdf(String idContract){
+
+        return ServiceExecute.execute(
+            contractInstallmentsUseCase, 
+            new ContractInstallmentsUseCase.InputValues(idContract), 
+            (output) -> output.getInstallments()
+        );
+    }
 }

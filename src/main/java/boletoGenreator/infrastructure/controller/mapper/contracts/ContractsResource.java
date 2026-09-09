@@ -19,6 +19,7 @@ import boletoGenreator.infrastructure.controller.dto.contract.SimulationResponse
 import org.springframework.web.bind.annotation.GetMapping;
 
 
+
 @RestController
 @CrossOrigin(origins = "http://localhost:5173/")
 @RequestMapping(ContractsEndpoints.CONTRACT) 
@@ -35,5 +36,8 @@ public interface ContractsResource {
 
     @GetMapping(ContractsEndpoints.INSTALLMENTS)
     public CompletableFuture<List<ContractData.BankBillet>> InstallmentsContract(@PathVariable("id") String idContract);
+    
+    @GetMapping(ContractsEndpoints.INSTALLMENT_PDF)
+    public CompletableFuture<ResponseEntity<byte[]>> installmentPdf(@PathVariable("id") String idInstallment);
     
 }

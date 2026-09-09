@@ -5,6 +5,7 @@ public class ContractsEndpoints {
     public static final String CONTRACT = "/contract";
     public static final String DEAL = "/deal";
     public static final String CONTRACTPDF = "/{id}/pdf";
+    public static final String INSTALLMENT_PDF = "installment/{id}/pdf";
     public static final String SIMULATION = "/simulation/{id}";
     public static final String INSTALLMENTS = "/installments/{id}";
 
