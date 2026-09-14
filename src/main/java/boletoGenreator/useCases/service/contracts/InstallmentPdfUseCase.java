@@ -2,6 +2,7 @@ package boletoGenreator.useCases.service.contracts;
 
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Image;
+import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.UnitValue;
 
@@ -36,15 +37,29 @@ public class InstallmentPdfUseCase implements UseCase<InstallmentPdfUseCase.Inpu
 
         Table headerBank = new Table(headerBankD);
 
-        Image bankLogo = ItextFunctions.createImage("/banks/bradesco.png");
-
+        String imgUrl = logoBankDefine("");
+        Image bankLogo = ItextFunctions.createImage(imgUrl);
         Cell bankLogoCell = new Cell().add(bankLogo);
 
+        Cell bankNumber = new Cell().add(bankCodeManager(
+            Long.valueOf(45), (Long.valueOf(45) != null)  ? Long.valueOf(45) 
+            : null
+        ));
+
+        Cell bankBilletDigits = new Cell().add(
+            bank47Digits(
+            (Long.valueOf(47) != null) ? 
+            Long.valueOf(47) 
+            : null
+        ));
+
         headerBank.addCell(bankLogoCell);
+        headerBank.addCell(bankNumber);
+        headerBank.addCell(bankBilletDigits);
 
         managerItext.getDocument().add(bankLogoCell);
 
-        return new OutPutValues();
+        return new OutPutValues("");
     }
 
 
@@ -55,6 +70,43 @@ public class InstallmentPdfUseCase implements UseCase<InstallmentPdfUseCase.Inpu
 
     @Value 
     public static class OutPutValues implements  UseCase.OutPutValues{
+        private String returnV;
+    }
+
+    public String logoBankDefine(String bank){
+        String bankUrl = "/banks/";
         
+        switch (bank) {
+            case "BD":
+                bankUrl = bankUrl + "bradesco.png";
+                break;
+
+            case "BB":
+                bankUrl = bankUrl + "bb.png";
+                break;
+        
+            default:
+                bankUrl = bankUrl + "bb.png";
+                break;
+        }
+
+        return bankUrl;
+    }
+
+    public Paragraph bankCodeManager(Long bankcode, Long checkDigit){
+        String formatedBankCode = "" + bankcode;
+
+        if(!(checkDigit == null) && checkDigit > 0){
+            formatedBankCode = formatedBankCode + "-" + checkDigit;
+        }
+
+        return new Paragraph(formatedBankCode);
+    }
+    public Paragraph bank47Digits(Long digits){
+        if(digits == null){
+            return null;
+        }
+
+        return new Paragraph("" + digits);
     }
 }

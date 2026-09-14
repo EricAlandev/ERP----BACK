@@ -17,6 +17,7 @@ import boletoGenreator.infrastructure.controller.dto.contract.SimulationResponse
 import boletoGenreator.infrastructure.controller.dto.pdfs.PdfResponse;
 import boletoGenreator.useCases.ServiceExecute;
 import boletoGenreator.useCases.service.contracts.ContractInstallmentsUseCase;
+import boletoGenreator.useCases.service.contracts.InstallmentPdfUseCase;
 import boletoGenreator.useCases.service.contracts.MakeContractUseCase;
 import boletoGenreator.useCases.service.contracts.SimulationUseCase;
 
@@ -28,12 +29,14 @@ public class ContractsController implements ContractsResource{
     private final SimulationUseCase simulationUseCase;
     private final ContractPdfUseCase contractPdfUseCase;
     private final ContractInstallmentsUseCase contractInstallmentsUseCase;
+    private final InstallmentPdfUseCase installmentPdfUseCase;
 
-    public ContractsController(MakeContractUseCase makeContractUseCase, SimulationUseCase simulationUseCase, ContractPdfUseCase contractPdfUseCase, Authentication authentication,  ContractInstallmentsUseCase contractInstallmentsUseCase){
+    public ContractsController(MakeContractUseCase makeContractUseCase, SimulationUseCase simulationUseCase, ContractPdfUseCase contractPdfUseCase, Authentication authentication,  ContractInstallmentsUseCase contractInstallmentsUseCase, InstallmentPdfUseCase installmentPdfUseCase){
         this.makeContractUseCase = makeContractUseCase;
         this.simulationUseCase = simulationUseCase;
         this.contractPdfUseCase = contractPdfUseCase;
         this.contractInstallmentsUseCase = contractInstallmentsUseCase;
+        this.installmentPdfUseCase = installmentPdfUseCase;
     }
     
     @Override
@@ -80,9 +83,9 @@ public class ContractsController implements ContractsResource{
     public CompletableFuture<ResponseEntity<byte[]>> installmentPdf(String idContract){
 
         return ServiceExecute.execute(
-            contractInstallmentsUseCase, 
-            new ContractInstallmentsUseCase.InputValues(idContract), 
-            (output) -> output.getInstallments()
+            installmentPdfUseCase, 
+            new InstallmentPdfUseCase.InputValues(idContract), 
+            (output) -> output.getReturnV()
         );
     }
 }

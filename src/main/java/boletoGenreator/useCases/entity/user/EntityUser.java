@@ -42,4 +42,7 @@ public class EntityUser {
 
     @OneToMany(mappedBy = "contractsUser", cascade = CascadeType.ALL)
     private List<EntityContracts> userContracts;
+
+    @OneToMany(mappedBy = "userAdress", cascade = CascadeType.ALL)
+    private List<EntityAdress> adress;
 }

@@ -9,10 +9,12 @@ import boletoGenreator.infrastructure.controller.mapper.contracts.ContractPdfUse
 import boletoGenreator.infrastructure.repository.BankBilletsRepository;
 import boletoGenreator.infrastructure.repository.UserIntegrityRepository;
 import boletoGenreator.infrastructure.repository.UserRepository;
+import boletoGenreator.infrastructure.repository.combos.ComboStateRepository;
 import boletoGenreator.infrastructure.repository.contracts.ContractBilletsRepository;
 import boletoGenreator.infrastructure.repository.contracts.ContractRepository;
 import boletoGenreator.useCases.impl.user.UserCustomRepository;
 import boletoGenreator.useCases.impl.user.UserCustomRepositoryImpl;
+import boletoGenreator.useCases.service.combos.ComboStateUseCase;
 import boletoGenreator.useCases.service.contracts.MakeContractUseCase;
 import boletoGenreator.useCases.service.contracts.SimulationUseCase;
 import boletoGenreator.useCases.service.inAndOut.LoginUseCase;
@@ -78,5 +80,10 @@ public class Modules {
     @Bean 
     public boletoGenreator.useCases.service.contracts.ContractInstallmentsUseCase contractInstallmentsUseCase (UserCustomRepository userCustomRepository){
         return new boletoGenreator.useCases.service.contracts.ContractInstallmentsUseCase(userCustomRepository);
+    }
+
+    @Bean 
+    public ComboStateUseCase comboStateUseCase(ComboStateRepository coboStateRepository){
+        return new ComboStateUseCase(coboStateRepository);
     }
 }
