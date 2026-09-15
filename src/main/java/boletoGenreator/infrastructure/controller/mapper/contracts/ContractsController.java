@@ -85,7 +85,7 @@ public class ContractsController implements ContractsResource{
         return ServiceExecute.execute(
             installmentPdfUseCase, 
             new InstallmentPdfUseCase.InputValues(idContract), 
-            (output) -> output.getReturnV()
+            (output) -> PdfResponse.from(output.getReturnV(), null)
         );
     }
 }

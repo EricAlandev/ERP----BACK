@@ -59,7 +59,7 @@ public class InstallmentPdfUseCase implements UseCase<InstallmentPdfUseCase.Inpu
 
         managerItext.getDocument().add(bankLogoCell);
 
-        return new OutPutValues("");
+        return new OutPutValues(managerItext.getOutput().toByteArray());
     }
 
 
@@ -70,7 +70,7 @@ public class InstallmentPdfUseCase implements UseCase<InstallmentPdfUseCase.Inpu
 
     @Value 
     public static class OutPutValues implements  UseCase.OutPutValues{
-        private String returnV;
+        private byte[] returnV;
     }
 
     public String logoBankDefine(String bank){

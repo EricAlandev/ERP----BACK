@@ -14,7 +14,9 @@ import boletoGenreator.infrastructure.repository.contracts.ContractBilletsReposi
 import boletoGenreator.infrastructure.repository.contracts.ContractRepository;
 import boletoGenreator.useCases.impl.user.UserCustomRepository;
 import boletoGenreator.useCases.impl.user.UserCustomRepositoryImpl;
+import boletoGenreator.useCases.service.cep.FindCepUseCase;
 import boletoGenreator.useCases.service.combos.ComboStateUseCase;
+import boletoGenreator.useCases.service.contracts.InstallmentPdfUseCase;
 import boletoGenreator.useCases.service.contracts.MakeContractUseCase;
 import boletoGenreator.useCases.service.contracts.SimulationUseCase;
 import boletoGenreator.useCases.service.inAndOut.LoginUseCase;
@@ -85,5 +87,17 @@ public class Modules {
     @Bean 
     public ComboStateUseCase comboStateUseCase(ComboStateRepository coboStateRepository){
         return new ComboStateUseCase(coboStateRepository);
+    }   
+
+    @Bean 
+    public InstallmentPdfUseCase installmentPdfUseCase(UserRepository userRepository){
+
+        return new InstallmentPdfUseCase(userRepository);
+    }
+
+    @Bean 
+    public FindCepUseCase findCepUseCase(RestClient restClient){
+
+        return new FindCepUseCase(restClient);
     }
 }

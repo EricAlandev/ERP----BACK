@@ -1,12 +1,11 @@
 package boletoGenreator.useCases.entity.user;
 
-import java.util.List;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -17,7 +16,6 @@ import lombok.Setter;
 @Setter
 @Table(name = "adress")
 public class EntityAdress {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,6 +36,6 @@ public class EntityAdress {
     private String cep;
 
     @ManyToOne
-    @Column(name = "user_id")
-    private List<EntityUser> userAdress;
+    @JoinColumn(name = "user_id")
+    private EntityUser userAdress;
 }
