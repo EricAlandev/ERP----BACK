@@ -2,10 +2,15 @@ package boletoGenreator.infrastructure.controller.mapper.cep;
 
 import java.util.concurrent.CompletableFuture;
 
-import boletoGenreator.domain.model.cep.CepRespondeDTO;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RestController;
+
+import boletoGenreator.infrastructure.controller.dto.cep.CepResponse;
 import boletoGenreator.useCases.ServiceExecute;
 import boletoGenreator.useCases.service.cep.FindCepUseCase;
 
+@RestController  
+@CrossOrigin (origins = "http://localhost:5173/")
 public class CepController implements CepResource {
 
     private final FindCepUseCase findCepUseCase;
@@ -15,12 +20,12 @@ public class CepController implements CepResource {
     }
     
     @Override 
-    public CompletableFuture<CepRespondeDTO> findCEP(String cepNumber){
+    public CompletableFuture<CepResponse> findCEP(String cepNumber){
 
         return ServiceExecute.execute(
             findCepUseCase, 
             new FindCepUseCase.InputValues(cepNumber), 
-            (output) -> output.getCepResponse()
+            (output) -> CepResponse.from(output.getCepResponse())
         );
     }
 }

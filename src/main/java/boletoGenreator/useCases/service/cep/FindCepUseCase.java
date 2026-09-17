@@ -26,6 +26,10 @@ public class FindCepUseCase implements UseCase<FindCepUseCase.InputValues, FindC
         .retrieve()
         .body(CepRespondeDTO.class);
         
+        if(response.getCep() == null || response.getBairro() == null || response.getLogradouro() == null || response.getUf() == null){
+            throw new RuntimeException("Cep not found");
+        }   
+
         return new OutPutValues(response);
     }
 
