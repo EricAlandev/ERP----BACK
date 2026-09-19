@@ -30,4 +30,29 @@ public class RegisterData {
     @NotBlank(message = "birthday cannot be blank")
     @NotEmpty(message = "birthday cannot be epty")
     private String birthday;
+
+    @NotNull(message = "cep cannot be null")
+    @NotBlank(message = "cep cannot be blank")
+    @NotEmpty(message = "cep cannot be epty")
+    private String cep;
+
+    @NotNull(message = "state cannot be null")
+    @NotBlank(message = "state cannot be blank")
+    @NotEmpty(message = "state cannot be epty")
+    private String state;
+
+    @NotNull(message = "neighborhood cannot be null")
+    @NotBlank(message = "neighborhood cannot be blank")
+    @NotEmpty(message = "neighborhood cannot be epty")
+    private String neighborhood;
+
+    @NotNull(message = "adress cannot be null")
+    @NotBlank(message = "adress cannot be blank")
+    @NotEmpty(message = "adress cannot be epty")
+    private String adress;
+
+    @NotNull(message = "adressNumber cannot be null")
+    @NotBlank(message = "adressNumber cannot be blank")
+    @NotEmpty(message = "adressNumber cannot be epty")
+    private String adressNumber;
 }
