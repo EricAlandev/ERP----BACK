@@ -37,6 +37,15 @@ public class EntityUser {
     @Column(length = 500)
     private String token;
 
+    @Column(length = 1)
+    private String gender;
+
+    @Column(length = 1, name="type_user")
+    private String typeUser;
+
+    @Column(length = 14, name="cic")
+    private String cic;
+
     @OneToMany(mappedBy = "userByIntegrity", cascade = CascadeType.ALL)
     private List<EntityUserIntegrity> integrity;
 

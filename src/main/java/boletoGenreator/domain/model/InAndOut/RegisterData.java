@@ -31,28 +31,50 @@ public class RegisterData {
     @NotEmpty(message = "birthday cannot be epty")
     private String birthday;
 
-    @NotNull(message = "cep cannot be null")
-    @NotBlank(message = "cep cannot be blank")
-    @NotEmpty(message = "cep cannot be epty")
-    private String cep;
+    private String gender;
 
-    @NotNull(message = "state cannot be null")
-    @NotBlank(message = "state cannot be blank")
-    @NotEmpty(message = "state cannot be epty")
-    private String state;
+    //C - Company; P - Person
+    @NotNull(message = "typeUser cannot be null")
+    @NotBlank(message = "typeUser cannot be blank")
+    @NotEmpty(message = "typeUser cannot be epty")
+    private String typeUser;
 
-    @NotNull(message = "neighborhood cannot be null")
-    @NotBlank(message = "neighborhood cannot be blank")
-    @NotEmpty(message = "neighborhood cannot be epty")
-    private String neighborhood;
+    @NotNull(message = "cic cannot be null")
+    @NotBlank(message = "cic cannot be blank")
+    @NotEmpty(message = "cic cannot be epty")
+    private String cic;
 
-    @NotNull(message = "adress cannot be null")
-    @NotBlank(message = "adress cannot be blank")
-    @NotEmpty(message = "adress cannot be epty")
-    private String adress;
+    private RegisterData.AdressData adressData;
 
-    @NotNull(message = "adressNumber cannot be null")
-    @NotBlank(message = "adressNumber cannot be blank")
-    @NotEmpty(message = "adressNumber cannot be epty")
-    private String adressNumber;
+    @Getter 
+    @Setter 
+    @Builder 
+    @NoArgsConstructor 
+    @AllArgsConstructor 
+    public static class AdressData{
+        @NotNull(message = "cep cannot be null")
+        @NotBlank(message = "cep cannot be blank")
+        @NotEmpty(message = "cep cannot be epty")
+        private String cep;
+
+        @NotNull(message = "state cannot be null")
+        @NotBlank(message = "state cannot be blank")
+        @NotEmpty(message = "state cannot be epty")
+        private String state;
+
+        @NotNull(message = "neighborhood cannot be null")
+        @NotBlank(message = "neighborhood cannot be blank")
+        @NotEmpty(message = "neighborhood cannot be epty")
+        private String neighborhood;
+
+        @NotNull(message = "adress cannot be null")
+        @NotBlank(message = "adress cannot be blank")
+        @NotEmpty(message = "adress cannot be epty")
+        private String adress;
+
+        @NotNull(message = "adressNumber cannot be null")
+        @NotBlank(message = "adressNumber cannot be blank")
+        @NotEmpty(message = "adressNumber cannot be epty")
+        private String adressNumber;
+    }
 }

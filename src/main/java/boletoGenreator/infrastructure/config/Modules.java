@@ -9,6 +9,7 @@ import boletoGenreator.infrastructure.controller.mapper.contracts.ContractPdfUse
 import boletoGenreator.infrastructure.repository.BankBilletsRepository;
 import boletoGenreator.infrastructure.repository.UserIntegrityRepository;
 import boletoGenreator.infrastructure.repository.UserRepository;
+import boletoGenreator.infrastructure.repository.adress.AdressRepository;
 import boletoGenreator.infrastructure.repository.combos.ComboStateRepository;
 import boletoGenreator.infrastructure.repository.contracts.ContractBilletsRepository;
 import boletoGenreator.infrastructure.repository.contracts.ContractRepository;
@@ -42,8 +43,8 @@ public class Modules {
     }
 
     @Bean
-    public RegisterUseCase registerUseCase(UserRepository userRepository, UserIntegrityRepository userIntegrityRepository){
-        return new RegisterUseCase(userRepository, userIntegrityRepository);
+    public RegisterUseCase registerUseCase(UserRepository userRepository, UserIntegrityRepository userIntegrityRepository, AdressRepository adressRepository){
+        return new RegisterUseCase(userRepository, userIntegrityRepository, adressRepository);
     }
 
     @Bean

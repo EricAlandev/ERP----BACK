@@ -13,6 +13,7 @@ import boletoGenreator.useCases.UseCase;
 import boletoGenreator.useCases.entity.user.EntityAdress;
 import boletoGenreator.useCases.entity.user.EntityUser;
 import boletoGenreator.useCases.entity.user.EntityUserIntegrity;
+import ch.qos.logback.core.util.StringUtil;
 import jakarta.transaction.Transactional;
 import lombok.Value;
 
@@ -43,16 +44,21 @@ public class RegisterUseCase implements UseCase<RegisterUseCase.InputValues, Reg
 
         LocalDateTime now = ParseTime.parseTolocal(birthday);
         user.setBirthday(now);
+        user.setTypeUser(input.getData().getTypeUser());
+        user.setCic(input.getData().getCic());
+        defineGender(user, input);
+
 
         userRepository.save(user);
 
         EntityAdress adress = new EntityAdress();
+        RegisterData.AdressData adressData = input.getData().getAdressData();
 
-        adress.setCep(input.getData().getCep());
-        adress.setState(input.getData().getState());
-        adress.setNeighborhood(input.getData().getNeighborhood());
-        adress.setAdress(input.getData().getAdress());
-        adress.setAdressNumber(Long.parseLong(input.getData().getAdressNumber()));
+        adress.setCep(adressData.getCep());
+        adress.setState(adressData.getState());
+        adress.setNeighborhood(adressData.getNeighborhood());
+        adress.setAdress(adressData.getAdress());
+        adress.setAdressNumber(Long.parseLong(adressData.getAdressNumber()));
 
         adressRepository.save(adress);
 
@@ -74,5 +80,22 @@ public class RegisterUseCase implements UseCase<RegisterUseCase.InputValues, Reg
     @Value
     public static class OutPutValues implements UseCase.OutPutValues{
         String message;
+    }
+
+    public void defineGender(EntityUser user, InputValues input) throws RuntimeException{
+        if(input.getData().getTypeUser() == "C"){
+            if(StringUtil.isNullOrEmpty(input.getData().getGender())){
+                user.setGender("N");
+            }
+        }
+
+        else{
+            user.setGender(input.getData().getGender());
+        }
+
+        //final verification
+        if(StringUtil.isNullOrEmpty(user.getGender())){
+            throw new RuntimeException("Gender Error");
+        }
     }
 }
