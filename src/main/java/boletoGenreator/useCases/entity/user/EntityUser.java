@@ -43,7 +43,7 @@ public class EntityUser {
     @Column(length = 1, name="type_user")
     private String typeUser;
 
-    @Column(length = 14, name="cic")
+    @Column(length = 14, name="nr_cic")
     private String cic;
 
     @OneToMany(mappedBy = "userByIntegrity", cascade = CascadeType.ALL)

@@ -13,6 +13,7 @@ import boletoGenreator.useCases.UseCase;
 import boletoGenreator.useCases.entity.user.EntityAdress;
 import boletoGenreator.useCases.entity.user.EntityUser;
 import boletoGenreator.useCases.entity.user.EntityUserIntegrity;
+import boletoGenreator.useCases.service.Text.TextFunctions;
 import ch.qos.logback.core.util.StringUtil;
 import jakarta.transaction.Transactional;
 import lombok.Value;
@@ -45,20 +46,20 @@ public class RegisterUseCase implements UseCase<RegisterUseCase.InputValues, Reg
         LocalDateTime now = ParseTime.parseTolocal(birthday);
         user.setBirthday(now);
         user.setTypeUser(input.getData().getTypeUser());
-        user.setCic(input.getData().getCic());
+        user.setCic(TextFunctions.formatCic(input.getData().getCic()));
         defineGender(user, input);
-
 
         userRepository.save(user);
 
         EntityAdress adress = new EntityAdress();
         RegisterData.AdressData adressData = input.getData().getAdressData();
 
-        adress.setCep(adressData.getCep());
+        adress.setCep(TextFunctions.formatCic(adressData.getCep()));
         adress.setState(adressData.getState());
         adress.setNeighborhood(adressData.getNeighborhood());
         adress.setAdress(adressData.getAdress());
-        adress.setAdressNumber(Long.parseLong(adressData.getAdressNumber()));
+        adress.setAdressNumber(Long.valueOf(adressData.getAdressNumber()));
+        adress.setUserAdress(user);
 
         adressRepository.save(adress);
 
@@ -83,7 +84,7 @@ public class RegisterUseCase implements UseCase<RegisterUseCase.InputValues, Reg
     }
 
     public void defineGender(EntityUser user, InputValues input) throws RuntimeException{
-        if(input.getData().getTypeUser() == "C"){
+        if("C".equals(input.getData().getTypeUser())){
             if(StringUtil.isNullOrEmpty(input.getData().getGender())){
                 user.setGender("N");
             }

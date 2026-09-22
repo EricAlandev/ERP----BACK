@@ -12,10 +12,12 @@ import boletoGenreator.infrastructure.repository.UserIntegrityRepository;
 import boletoGenreator.infrastructure.repository.UserRepository;
 import boletoGenreator.infrastructure.repository.contracts.ContractBilletsRepository;
 import boletoGenreator.infrastructure.repository.contracts.ContractRepository;
+import boletoGenreator.infrastructure.repository.system.SystemRepository;
 import boletoGenreator.useCases.UseCase;
 import boletoGenreator.useCases.entity.EntityBankBillet;
 import boletoGenreator.useCases.entity.contracts.EntityContractBillet;
 import boletoGenreator.useCases.entity.contracts.EntityContracts;
+import boletoGenreator.useCases.entity.system.EntitySystemPara;
 import boletoGenreator.useCases.entity.user.EntityUser;
 import boletoGenreator.useCases.entity.user.EntityUserIntegrity;
 import jakarta.transaction.Transactional;
@@ -28,13 +30,15 @@ public class MakeContractUseCase implements UseCase<MakeContractUseCase.InputVal
     private final UserIntegrityRepository userIntegrityRepository;
     private final ContractRepository contractRepository;
     private final ContractBilletsRepository contractBilletsRepository;
+    private final SystemRepository systemRepository;
 
-    public MakeContractUseCase(UserRepository userRepository, BankBilletsRepository bankBilletsRepository, UserIntegrityRepository userIntegrityRepository, ContractBilletsRepository contractBilletsRepository, ContractRepository contractRepository){
+    public MakeContractUseCase(UserRepository userRepository, BankBilletsRepository bankBilletsRepository, UserIntegrityRepository userIntegrityRepository, ContractBilletsRepository contractBilletsRepository, ContractRepository contractRepository, SystemRepository systemRepository){
         this.userRepository = userRepository;
         this.bankBilletsRepository = bankBilletsRepository;
         this.userIntegrityRepository = userIntegrityRepository;
         this.contractBilletsRepository = contractBilletsRepository;
         this.contractRepository = contractRepository;
+        this.systemRepository = systemRepository;
     }
 
     @Override
@@ -57,6 +61,17 @@ public class MakeContractUseCase implements UseCase<MakeContractUseCase.InputVal
         Long idContract = -1L;
 
         if(userCanLoan){
+            //Calculate CET
+            BigDecimal priceLoan = contractData.getPriceInstallments().multiply(BigDecimal.valueOf(contractData.getQuantityInstallments()));
+
+            BigDecimal presentValue = calculateIOF(input, contractData, priceLoan);
+
+            BigDecimal profit = calculationProfit(contractData, presentValue, priceLoan);
+
+            BigDecimal cet = profit.divide(priceLoan).multiply(BigDecimal.valueOf(100));
+            BigDecimal monthCet = cet.divide(BigDecimal.valueOf(12));
+
+
             //create the list to receive all of the banks and pivos;
             List<EntityBankBillet> bankBilletsList = new ArrayList<>();
             List<EntityContractBillet> pivoList = new ArrayList<>();
@@ -172,6 +187,44 @@ public class MakeContractUseCase implements UseCase<MakeContractUseCase.InputVal
             contractRepository.save(contract);
 
             return contract;
+    }
+
+    public BigDecimal calculateIOF(InputValues input, DealContract contractData, BigDecimal priceLoan){
+        EntitySystemPara iofData = systemRepository.findByIofMax("IOF");
+            BigDecimal fixedIOF = input.getContratData().getPriceInstallments().multiply(iofData.getIofMax());
+
+            Long totalDays = contractData.getQuantityInstallments() * 30;
+
+            BigDecimal maxDays = BigDecimal.valueOf(totalDays);
+
+            if(totalDays >= iofData.getMaxDays()){
+                maxDays = BigDecimal.valueOf(iofData.getMaxDays());
+            }
+
+            BigDecimal daylyIOF = maxDays.multiply(iofData.getIofPerDay()).multiply((priceLoan));
+
+            BigDecimal priceIOF = priceLoan.add(fixedIOF).add(daylyIOF);
+
+            BigDecimal finalprice = priceIOF.add(iofData.getTac());
+
+            return finalprice;
+    }
+
+    public BigDecimal calculationProfit(DealContract contractData, BigDecimal presentValue, BigDecimal priceLoan){
+            BigDecimal topPart = BigDecimal.ZERO.add(BigDecimal.ONE);
+
+            topPart = topPart.setScale(contractData.getQuantityInstallments().intValue());
+
+            topPart = topPart.multiply(BigDecimal.valueOf(contractData.getQuantityInstallments()));
+
+            BigDecimal lowerPart = BigDecimal.ONE.add(BigDecimal.valueOf(contractData.getQuantityInstallments()));
+
+            lowerPart = lowerPart.setScale(contractData.getQuantityInstallments().intValue()).subtract(BigDecimal.ONE);
+
+            BigDecimal TotalPrice = topPart.divide(lowerPart);
+            TotalPrice = TotalPrice.add(presentValue);
+
+            return TotalPrice.subtract(priceLoan);
     }
 
     public EntityBankBillet buildBankBillet(DealContract contractData, int i){
