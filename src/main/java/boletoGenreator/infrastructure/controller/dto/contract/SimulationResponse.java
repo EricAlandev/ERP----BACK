@@ -1,6 +1,5 @@
 package boletoGenreator.infrastructure.controller.dto.contract;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import boletoGenreator.useCases.entity.user.EntityUser;
@@ -13,24 +12,18 @@ import lombok.Setter;
 @Builder
 public class SimulationResponse {
 
-    private Long idClient;
     private String nameClient;
-    private String BankBilletType;
     private List<String> statsClient;
-    private BigDecimal taxes;
-    private int QuantityInstallments;
-    private Long price;
+    private String QuantityInstallments;
+    private Long maxPriceAllowed;
 
-    public static SimulationResponse from(BigDecimal taxes, int QuantityInstallments, EntityUser client, List<String> stats, Long price, String BankBilletType){
+    public static SimulationResponse from(int QuantityInstallments, EntityUser client, List<String> stats, Long maxPrice){
 
         return SimulationResponse.builder()
-        .idClient(client.getId())
         .nameClient(client.getEmail())
         .statsClient(stats)
-        .taxes(taxes)
-        .price(price)
-        .BankBilletType(BankBilletType)
-        .QuantityInstallments(QuantityInstallments)
+        .QuantityInstallments(String.valueOf(QuantityInstallments))
+        .maxPriceAllowed(maxPrice)
         .build();
     }
 }

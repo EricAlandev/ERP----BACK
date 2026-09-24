@@ -1,6 +1,5 @@
 package boletoGenreator.useCases.service.contracts;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,15 +31,15 @@ public class SimulationUseCase implements UseCase<SimulationUseCase.InputValues,
         Long price = Long.parseLong(input.getContractData().getPrice());
         String typeContract = input.getContractData().getBankBilletType();
 
-        TaxesInstallments taxesInstallments = defineTaxesAndInstallments(price, typeContract, Vip);
+        TaxesInstallments taxesInstallments = definePriceAndInstallments(price, typeContract, Vip);
 
-        BigDecimal taxes = taxesInstallments.getTaxes();
         int QuantityInstallments = taxesInstallments.getQuantityInstallments();
+        Long maxPriceAllowed = taxesInstallments.getMaxPriceAllowed();
 
         //clean the stats to the front-end
         List<String> statsToFront = cleanStats(userStats);
 
-        return new OutPutValues(taxes, QuantityInstallments, Client, statsToFront, price, input.getContractData().getBankBilletType()); 
+        return new OutPutValues(QuantityInstallments, Client, statsToFront, maxPriceAllowed); 
     }
 
     @Value
@@ -50,93 +49,53 @@ public class SimulationUseCase implements UseCase<SimulationUseCase.InputValues,
 
     @Value
     public static class OutPutValues implements UseCase.OutPutValues{
-        BigDecimal taxes;
         int QuantityInstallments;
         EntityUser clientData;
         List<String> statsToFront;
-        Long price;
-        String bankBilletType;
+        Long maxPriceAllowed;
     }
 
-    public TaxesInstallments defineTaxesAndInstallments(Long price, String typeContract, Boolean Vip){
+    public TaxesInstallments definePriceAndInstallments(Long price, String typeContract, Boolean Vip){
 
-        BigDecimal taxes = BigDecimal.ZERO;
+        Long maxPrice = (Vip) ? 30000L : 2000L;
         int installments = 0;
 
         if(price <= 0){
             throw new RuntimeException("Price can't be lower or equal to 0");        
         }
 
-        if ("LESS TAXES".equals(typeContract) && price > 10000 && !Vip) {
-            throw new RuntimeException("Price exceeds the 10,000 cap for LESS TAXES contracts");
+        if ("LESS TAXES".equals(typeContract) && price > maxPrice) {
+            throw new RuntimeException("The price excedes the cap");
         }
         
-        if ("MORE TAXES".equals(typeContract) && price > 200000 && !Vip) {
-            throw new RuntimeException("Price exceeds the 200,000 cap for MORE TAXES contracts");
+        if ("MORE TAXES".equals(typeContract) && price > maxPrice) {
+            throw new RuntimeException("The price excedes the cap");
         }
 
         if (price < 50) { 
-            if (!Vip) {
-                taxes = BigDecimal.valueOf(4.5);
-            } else {
-                taxes = BigDecimal.valueOf(5);
-            }
-
             installments = 1;
         } 
 
         else if (price >= 50 && price <= 300) {
-            if (!Vip) {
-                taxes = BigDecimal.valueOf(6.5);
-            } else {
-                taxes = BigDecimal.valueOf(7);
-            }
-
             installments = 3;
         } 
 
         else if (price > 300 && price <= 1000) {
-            if (!Vip) {
-                taxes = BigDecimal.valueOf(8);
-            } else {
-                taxes = BigDecimal.valueOf(9);
-            }
-
             installments = 7;
         } 
         else if (price > 1000 && price <= 5000) {
-            if (!Vip) {
-                taxes = BigDecimal.valueOf(11);
-            } else {
-                taxes = BigDecimal.valueOf(12);
-            }
-
             installments = 10;
         } 
         else if (price > 5000 && price <= 10000) {
-            if (!Vip) {
-                taxes = BigDecimal.valueOf(13.5);
-            } else {
-                taxes = BigDecimal.valueOf(15);
-            }
             installments = 12;
         } 
         else if (price > 10000) {
-            if (!Vip) {
-                taxes = BigDecimal.valueOf(15);
-            } else {
-                taxes = BigDecimal.valueOf(17);
-            }
             installments = 12;
-        }
-
-        if("LESS TAXES".equals(typeContract)){
-            taxes = taxes.subtract(BigDecimal.ONE);
         }
 
         TaxesInstallments taxesInstallments = new TaxesInstallments();
 
-        taxesInstallments.setTaxes(taxes);
+        taxesInstallments.setMaxPriceAllowed(maxPrice);
         taxesInstallments.setQuantityInstallments(installments);
 
         return taxesInstallments;

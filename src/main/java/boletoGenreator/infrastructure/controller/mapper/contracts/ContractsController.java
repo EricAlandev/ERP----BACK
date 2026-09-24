@@ -65,7 +65,7 @@ public class ContractsController implements ContractsResource{
         return ServiceExecute.execute(
             simulationUseCase, 
             new SimulationUseCase.InputValues(contratData), 
-            (output) -> SimulationResponse.from(output.getTaxes(), output.getQuantityInstallments(), output.getClientData(), output.getStatsToFront(), output.getPrice(), output.getBankBilletType())
+            (output) -> SimulationResponse.from(output.getQuantityInstallments(), output.getClientData(), output.getStatsToFront(), output.getMaxPriceAllowed())
         );
     }
 

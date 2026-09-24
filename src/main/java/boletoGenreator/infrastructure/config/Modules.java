@@ -13,6 +13,7 @@ import boletoGenreator.infrastructure.repository.adress.AdressRepository;
 import boletoGenreator.infrastructure.repository.combos.ComboStateRepository;
 import boletoGenreator.infrastructure.repository.contracts.ContractBilletsRepository;
 import boletoGenreator.infrastructure.repository.contracts.ContractRepository;
+import boletoGenreator.infrastructure.repository.system.SystemRepository;
 import boletoGenreator.useCases.impl.user.UserCustomRepository;
 import boletoGenreator.useCases.impl.user.UserCustomRepositoryImpl;
 import boletoGenreator.useCases.service.cep.FindCepUseCase;
@@ -48,9 +49,9 @@ public class Modules {
     }
 
     @Bean
-    public MakeContractUseCase makeContractUseCase(UserRepository userRepository, BankBilletsRepository bankBilletsRepository, UserIntegrityRepository userIntegrityRepository, ContractBilletsRepository contractBilletsRepository, ContractRepository contractRepository){
+    public MakeContractUseCase makeContractUseCase(UserRepository userRepository, BankBilletsRepository bankBilletsRepository, UserIntegrityRepository userIntegrityRepository, ContractBilletsRepository contractBilletsRepository, ContractRepository contractRepository, SystemRepository systemRepository){
 
-        return new MakeContractUseCase(userRepository, bankBilletsRepository, userIntegrityRepository, contractBilletsRepository, contractRepository);
+        return new MakeContractUseCase(userRepository, bankBilletsRepository, userIntegrityRepository, contractBilletsRepository, contractRepository, systemRepository);
     }
 
     @Bean

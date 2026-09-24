@@ -1,7 +1,5 @@
 package boletoGenreator.domain.model.contracts;
 
-import java.math.BigDecimal;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +12,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class TaxesInstallments {
-    private BigDecimal taxes;
     private int quantityInstallments;
+    private Long MaxPriceAllowed;
 }

@@ -71,7 +71,7 @@ public class MakeContractUseCase implements UseCase<MakeContractUseCase.InputVal
             BigDecimal cet = profit.divide(priceLoan).multiply(BigDecimal.valueOf(100));
             BigDecimal monthCet = cet.divide(BigDecimal.valueOf(12));
 
-
+            
             //create the list to receive all of the banks and pivos;
             List<EntityBankBillet> bankBilletsList = new ArrayList<>();
             List<EntityContractBillet> pivoList = new ArrayList<>();
@@ -222,7 +222,7 @@ public class MakeContractUseCase implements UseCase<MakeContractUseCase.InputVal
             lowerPart = lowerPart.setScale(contractData.getQuantityInstallments().intValue()).subtract(BigDecimal.ONE);
 
             BigDecimal TotalPrice = topPart.divide(lowerPart);
-            TotalPrice = TotalPrice.add(presentValue);
+            TotalPrice = TotalPrice.multiply(presentValue);
 
             return TotalPrice.subtract(priceLoan);
     }
