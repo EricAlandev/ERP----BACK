@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 @RestController
 @CrossOrigin(origins = "http://localhost:5173/")
 @RequestMapping(UserEndpoints.Search)
@@ -26,4 +25,7 @@ public interface UserResource {
 
     @GetMapping(UserEndpoints.UserData)
     public CompletableFuture<UserPageResponse>pullUserData(@PathVariable("id") String userId);
+
+    @GetMapping(UserEndpoints.LimitsData)
+    public CompletableFuture<String> pullUserLimits(@PathVariable("id") String idUser);
 }

@@ -1,4 +1,4 @@
-package boletoGenreator.infrastructure.repository;
+package boletoGenreator.infrastructure.repository.user;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;

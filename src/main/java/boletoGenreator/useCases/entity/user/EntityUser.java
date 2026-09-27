@@ -11,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -46,6 +47,9 @@ public class EntityUser {
     @Column(length = 14, name="nr_cic")
     private String cic;
 
+    @Column(name = "creation_date")
+    private LocalDateTime creationDate;
+
     @OneToMany(mappedBy = "userByIntegrity", cascade = CascadeType.ALL)
     private List<EntityUserIntegrity> integrity;
 
@@ -54,4 +58,10 @@ public class EntityUser {
 
     @OneToMany(mappedBy = "userAdress", cascade = CascadeType.ALL)
     private List<EntityAdress> adress;
+
+    @OneToOne(mappedBy = "userFromScore", cascade = CascadeType.ALL)
+    private EntityUserScore scoreUser;
+
+    @OneToOne(mappedBy = "userByProfession", cascade = CascadeType.ALL)
+    private EntityUserProfession profession;
 }

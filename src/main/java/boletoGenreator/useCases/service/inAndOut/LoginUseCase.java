@@ -3,7 +3,7 @@ package boletoGenreator.useCases.service.inAndOut;
 import org.springframework.stereotype.Service;
 
 import boletoGenreator.domain.model.InAndOut.LoginData;
-import boletoGenreator.infrastructure.repository.UserRepository;
+import boletoGenreator.infrastructure.repository.user.UserRepository;
 import boletoGenreator.useCases.UseCase;
 import boletoGenreator.useCases.entity.user.EntityUser;
 import boletoGenreator.useCases.service.jwt.JwtAuthorization;

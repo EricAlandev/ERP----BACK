@@ -1,5 +1,6 @@
 package boletoGenreator.useCases.service.inAndOut;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
@@ -7,12 +8,14 @@ import org.springframework.stereotype.Service;
 import boletoGenreator.domain.model.InAndOut.RegisterData;
 import boletoGenreator.infrastructure.controller.dto.generic.ParseTime;
 import boletoGenreator.infrastructure.repository.UserIntegrityRepository;
-import boletoGenreator.infrastructure.repository.UserRepository;
 import boletoGenreator.infrastructure.repository.adress.AdressRepository;
+import boletoGenreator.infrastructure.repository.user.UserRepository;
+import boletoGenreator.infrastructure.repository.user.UserScoreRepository;
 import boletoGenreator.useCases.UseCase;
 import boletoGenreator.useCases.entity.user.EntityAdress;
 import boletoGenreator.useCases.entity.user.EntityUser;
 import boletoGenreator.useCases.entity.user.EntityUserIntegrity;
+import boletoGenreator.useCases.entity.user.EntityUserScore;
 import boletoGenreator.useCases.service.Text.TextFunctions;
 import ch.qos.logback.core.util.StringUtil;
 import jakarta.transaction.Transactional;
@@ -24,11 +27,13 @@ public class RegisterUseCase implements UseCase<RegisterUseCase.InputValues, Reg
     private final UserRepository userRepository;
     private final UserIntegrityRepository userIntegrityRepository;
     private final AdressRepository adressRepository;
+    private final UserScoreRepository userScoreRepository;
 
-    public RegisterUseCase(UserRepository userRepository, UserIntegrityRepository userIntegrityRepository, AdressRepository adressRepository){
+    public RegisterUseCase(UserRepository userRepository, UserIntegrityRepository userIntegrityRepository, AdressRepository adressRepository, UserScoreRepository userScoreRepository){
         this.userRepository = userRepository;
         this.userIntegrityRepository = userIntegrityRepository;
         this.adressRepository = adressRepository;
+        this.userScoreRepository = userScoreRepository;
     }
 
     @Override
@@ -69,6 +74,13 @@ public class RegisterUseCase implements UseCase<RegisterUseCase.InputValues, Reg
         integrity.setUserByIntegrity(user);
 
         userIntegrityRepository.save(integrity);
+
+        EntityUserScore score = new EntityUserScore();
+        score.setScoreClient(BigDecimal.valueOf(100L));
+        score.setPaymentSituation("NC");
+        score.setLastChange(LocalDateTime.now());
+
+        userScoreRepository.save(score);
 
         return new OutPutValues("user saved");
     }

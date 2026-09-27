@@ -8,12 +8,13 @@ import org.springframework.web.client.RestClient;
 import boletoGenreator.infrastructure.controller.mapper.contracts.ContractPdfUseCase;
 import boletoGenreator.infrastructure.repository.BankBilletsRepository;
 import boletoGenreator.infrastructure.repository.UserIntegrityRepository;
-import boletoGenreator.infrastructure.repository.UserRepository;
 import boletoGenreator.infrastructure.repository.adress.AdressRepository;
 import boletoGenreator.infrastructure.repository.combos.ComboStateRepository;
 import boletoGenreator.infrastructure.repository.contracts.ContractBilletsRepository;
 import boletoGenreator.infrastructure.repository.contracts.ContractRepository;
 import boletoGenreator.infrastructure.repository.system.SystemRepository;
+import boletoGenreator.infrastructure.repository.user.UserRepository;
+import boletoGenreator.infrastructure.repository.user.UserScoreRepository;
 import boletoGenreator.useCases.impl.user.UserCustomRepository;
 import boletoGenreator.useCases.impl.user.UserCustomRepositoryImpl;
 import boletoGenreator.useCases.service.cep.FindCepUseCase;
@@ -25,6 +26,7 @@ import boletoGenreator.useCases.service.inAndOut.LoginUseCase;
 import boletoGenreator.useCases.service.inAndOut.RegisterUseCase;
 import boletoGenreator.useCases.service.jwt.JwtAuthorization;
 import boletoGenreator.useCases.service.users.SearchUsersUseCase;
+import boletoGenreator.useCases.service.users.UserLimitsUseCase;
 import boletoGenreator.useCases.service.users.UserPageUseCase;
 
 @Configuration
@@ -44,8 +46,8 @@ public class Modules {
     }
 
     @Bean
-    public RegisterUseCase registerUseCase(UserRepository userRepository, UserIntegrityRepository userIntegrityRepository, AdressRepository adressRepository){
-        return new RegisterUseCase(userRepository, userIntegrityRepository, adressRepository);
+    public RegisterUseCase registerUseCase(UserRepository userRepository, UserIntegrityRepository userIntegrityRepository, AdressRepository adressRepository, UserScoreRepository userScoreRepository){
+        return new RegisterUseCase(userRepository, userIntegrityRepository, adressRepository, userScoreRepository);
     }
 
     @Bean
@@ -101,5 +103,11 @@ public class Modules {
     public FindCepUseCase findCepUseCase(RestClient restClient){
 
         return new FindCepUseCase(restClient);
+    }
+
+    @Bean 
+    public UserLimitsUseCase userLimitsUseCase(UserScoreRepository userScoreRepository){
+
+        return new UserLimitsUseCase(userScoreRepository);
     }
 }

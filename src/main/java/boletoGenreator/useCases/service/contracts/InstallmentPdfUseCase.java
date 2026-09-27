@@ -6,7 +6,7 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.UnitValue;
 
-import boletoGenreator.infrastructure.repository.UserRepository;
+import boletoGenreator.infrastructure.repository.user.UserRepository;
 import boletoGenreator.useCases.UseCase;
 import boletoGenreator.useCases.entity.user.EntityUser;
 import boletoGenreator.useCases.service.pdfs.ItextFunctions;

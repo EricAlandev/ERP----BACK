@@ -2,7 +2,7 @@ package boletoGenreator.useCases.service.users;
 
 import java.util.List;
 
-import boletoGenreator.infrastructure.repository.UserRepository;
+import boletoGenreator.infrastructure.repository.user.UserRepository;
 import boletoGenreator.useCases.UseCase;
 import boletoGenreator.useCases.entity.contracts.EntityContracts;
 import boletoGenreator.useCases.entity.user.EntityUser;

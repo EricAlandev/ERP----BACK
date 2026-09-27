@@ -2,6 +2,7 @@ package boletoGenreator.useCases.entity;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import boletoGenreator.useCases.entity.contracts.EntityContractBillet;
@@ -32,8 +33,20 @@ public class EntityBankBillet {
     @Column()
     private BigDecimal price;
 
+    //PD - Pending
+    //P  - Payed
+    //L  - Late
     @Column(length = 2)
     private String stats;
+
+    @Column(name = "payed_on_day")
+    private LocalDateTime dateTime;
+
+    @Column(length = 10, name = "late_fee")
+    private BigDecimal lateFee;
+
+    @Column(length = 20, name = "fee_mora")
+    private BigDecimal FeeMora;
 
     @Column(name = "expirationdate", columnDefinition = "TEXT")
     private Timestamp expirationDate;

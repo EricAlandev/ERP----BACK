@@ -5,7 +5,7 @@ import java.util.List;
 
 import boletoGenreator.domain.model.contracts.MakeContract;
 import boletoGenreator.domain.model.contracts.TaxesInstallments;
-import boletoGenreator.infrastructure.repository.UserRepository;
+import boletoGenreator.infrastructure.repository.user.UserRepository;
 import boletoGenreator.useCases.UseCase;
 import boletoGenreator.useCases.entity.user.EntityUser;
 import boletoGenreator.useCases.entity.user.EntityUserIntegrity;
