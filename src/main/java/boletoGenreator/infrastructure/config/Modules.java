@@ -106,8 +106,8 @@ public class Modules {
     }
 
     @Bean 
-    public UserLimitsUseCase userLimitsUseCase(UserScoreRepository userScoreRepository){
+    public UserLimitsUseCase userLimitsUseCase(UserScoreRepository userScoreRepository, ContractRepository contractRepository, ContractBilletsRepository contractBilletsRepository, BankBilletsRepository bankBilletsRepository){
 
-        return new UserLimitsUseCase(userScoreRepository);
+        return new UserLimitsUseCase(userScoreRepository, bankBilletsRepository, contractBilletsRepository, contractRepository);
     }
 }

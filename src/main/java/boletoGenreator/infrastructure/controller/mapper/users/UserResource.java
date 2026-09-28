@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import boletoGenreator.domain.model.limits.PreLimitsDTO;
 import boletoGenreator.domain.model.users.UserPageResponse;
 import boletoGenreator.domain.model.users.UserSearch;
 
@@ -27,5 +28,5 @@ public interface UserResource {
     public CompletableFuture<UserPageResponse>pullUserData(@PathVariable("id") String userId);
 
     @GetMapping(UserEndpoints.LimitsData)
-    public CompletableFuture<String> pullUserLimits(@PathVariable("id") String idUser);
+    public CompletableFuture<PreLimitsDTO> pullUserLimits(@PathVariable("id") String idUser);
 }

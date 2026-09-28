@@ -2,11 +2,11 @@ package boletoGenreator.useCases.service.users;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.security.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
+import boletoGenreator.domain.model.limits.PreLimitsDTO;
+import boletoGenreator.domain.model.users.UserLimitsDTO;
 import boletoGenreator.infrastructure.repository.BankBilletsRepository;
 import boletoGenreator.infrastructure.repository.contracts.ContractBilletsRepository;
 import boletoGenreator.infrastructure.repository.contracts.ContractRepository;
@@ -38,25 +38,27 @@ public class UserLimitsUseCase implements UseCase<UserLimitsUseCase.InputValues,
 
         Long idUser = input.getIdUser();
         
-        EntityUserScore score = userScoreRepository.findUserScore(idUser)
+        UserLimitsDTO limitsDTO = userScoreRepository.findUserScore(idUser)
         .orElseThrow(() -> new RuntimeException("user or score not found"));
 
         LocalDateTime monthAgo = LocalDateTime.now().minusMonths(1);
 
-        Boolean recalculateScore = (score.getLastChange().isBefore(monthAgo)) ? true : false;
+        Boolean recalculateScore = limitsDTO.getScore().getLastChange().isBefore(monthAgo);
 
         if(recalculateScore){
-            CalculateClientScore(idUser, score);
+            try {
+                limitsDTO.setScore(CalculateClientScore(idUser, limitsDTO));
+            } catch (Exception e) {
+                throw new RuntimeException("exception on the limitsUseCase " + e.getMessage());
+            } 
         }
 
-        //Need to make the rest of the logical. 
-        //fetch the user and verify his salary
-        //make the max Loan price being 30% of his salary
-        //
-        //Then, create the quantity installments;
-        
+        EntityUserScore score = limitsDTO.getScore();
+        String paymentSituation = score.getPaymentSituation();
 
-        return new OutPutValues();
+        PreLimitsDTO limits = calculateLoanAndInstallments(paymentSituation, limitsDTO.getSalary());
+
+        return new OutPutValues(limits);
     }
 
 
@@ -67,12 +69,12 @@ public class UserLimitsUseCase implements UseCase<UserLimitsUseCase.InputValues,
 
     @Value 
     public static class OutPutValues implements  UseCase.OutPutValues{
-        private BigDecimal maxLoanPrice;
-        private Long quantityInstallments;
+        private PreLimitsDTO dto;
     }
 
-    public void CalculateClientScore(Long idUser, EntityUserScore score){
-         LocalDateTime timeCap = LocalDateTime.now().minusMonths(6);
+    public EntityUserScore CalculateClientScore(Long idUser, UserLimitsDTO score) throws Exception{
+         try {
+            LocalDateTime timeCap = LocalDateTime.now().minusMonths(6);
             List<EntityContracts> contracts = contractRepository.findContractsWithCap(idUser, timeCap);
 
             if(contracts != null && contracts.size() > 0){
@@ -111,15 +113,15 @@ public class UserLimitsUseCase implements UseCase<UserLimitsUseCase.InputValues,
 
                 String paymentSituation = null;
 
-                if(finalBalance.compareTo(BigDecimal.valueOf(0F)) >= 0 && finalBalance.compareTo(BigDecimal.valueOf(60F)) < 0){
+                if(finalBalance.compareTo(BigDecimal.valueOf(0L)) >= 0 && finalBalance.compareTo(BigDecimal.valueOf(60L)) < 0){
                     paymentSituation = "BC";
                 }
 
-                else if(finalBalance.compareTo(BigDecimal.valueOf(60F)) >= 0 && finalBalance.compareTo(BigDecimal.valueOf(80F)) < 0){
+                else if(finalBalance.compareTo(BigDecimal.valueOf(60L)) >= 0 && finalBalance.compareTo(BigDecimal.valueOf(80L)) < 0){
                     paymentSituation = "AC";
                 }
 
-                else if(finalBalance.compareTo(BigDecimal.valueOf(80F)) >= 0 && finalBalance.compareTo(BigDecimal.valueOf(100F)) <= 0){
+                else if(finalBalance.compareTo(BigDecimal.valueOf(80L)) >= 0 && finalBalance.compareTo(BigDecimal.valueOf(100L)) <= 0){
                     paymentSituation = "GC";
                 }
 
@@ -127,13 +129,76 @@ public class UserLimitsUseCase implements UseCase<UserLimitsUseCase.InputValues,
                     throw new RuntimeException("Fail on the payment simulation calculation");
                 }
 
-                score.setLastChange(LocalDateTime.now()); 
-                score.setPaymentSituation(paymentSituation);
-                score.setScoreClient(finalBalance);
+                EntityUserScore scoreEntity = score.getScore();
+
+                scoreEntity.setLastChange(LocalDateTime.now()); 
+                scoreEntity.setPaymentSituation(paymentSituation);
+                scoreEntity.setScoreClient(finalBalance);
                 
-                userScoreRepository.save(score);
-        
+                userScoreRepository.save(scoreEntity);
+
+                return scoreEntity;
             }
+
+            throw new RuntimeException("user dosn't ");
+         } catch (Exception e) {
+            throw new Exception(e.getMessage());
+         }
     }
 
+    public PreLimitsDTO calculateLoanAndInstallments (String paymentSituation, BigDecimal salary){
+        BigDecimal percentLoan = BigDecimal.ZERO;
+
+        try {
+            switch (paymentSituation) {
+                case "NC":
+                    percentLoan = BigDecimal.valueOf(0.10);
+                    break;
+
+                case "GC":
+                    percentLoan = BigDecimal.valueOf(0.30);
+                    break;
+
+                case "BC":
+                    percentLoan = BigDecimal.valueOf(0);
+                    break;
+
+                case "AC":
+                    percentLoan = BigDecimal.valueOf(0.18);
+                    break;
+            
+                default:
+                    percentLoan = BigDecimal.valueOf(0);
+                    break;
+            }
+
+            if(BigDecimal.ZERO.compareTo(percentLoan) == 0){
+                throw new RuntimeException("User not allowed to make loans");
+            }
+
+            BigDecimal maxLoan = salary.add(salary.multiply(percentLoan));
+
+            Long quantityInstallments = 2L;
+
+            if(!"BC".equals(paymentSituation)){
+                if(BigDecimal.valueOf(2000).compareTo(maxLoan) >= 0){
+                    quantityInstallments = 12L;
+                }
+
+                else if(BigDecimal.valueOf(8000).compareTo(maxLoan) >= 0){
+                    quantityInstallments = 24L;
+                }
+            }
+
+            PreLimitsDTO limitsData = new PreLimitsDTO();
+            limitsData.setMaxLoan(maxLoan);
+            limitsData.setQuantityInstallments(quantityInstallments);
+
+            return limitsData;
+            
+
+        } catch (Exception e) {
+           throw new RuntimeException(e.getMessage());
+        }
+    }
 }
