@@ -13,6 +13,7 @@ import boletoGenreator.infrastructure.repository.combos.ComboStateRepository;
 import boletoGenreator.infrastructure.repository.contracts.ContractBilletsRepository;
 import boletoGenreator.infrastructure.repository.contracts.ContractRepository;
 import boletoGenreator.infrastructure.repository.system.SystemRepository;
+import boletoGenreator.infrastructure.repository.user.UserProfessionRepository;
 import boletoGenreator.infrastructure.repository.user.UserRepository;
 import boletoGenreator.infrastructure.repository.user.UserScoreRepository;
 import boletoGenreator.useCases.impl.user.UserCustomRepository;
@@ -106,8 +107,8 @@ public class Modules {
     }
 
     @Bean 
-    public UserLimitsUseCase userLimitsUseCase(UserScoreRepository userScoreRepository, ContractRepository contractRepository, ContractBilletsRepository contractBilletsRepository, BankBilletsRepository bankBilletsRepository){
+    public UserLimitsUseCase userLimitsUseCase(UserScoreRepository userScoreRepository, ContractRepository contractRepository, ContractBilletsRepository contractBilletsRepository, BankBilletsRepository bankBilletsRepository, UserProfessionRepository userProfessionRepository){
 
-        return new UserLimitsUseCase(userScoreRepository, bankBilletsRepository, contractBilletsRepository, contractRepository);
+        return new UserLimitsUseCase(userScoreRepository, bankBilletsRepository, contractBilletsRepository, contractRepository, userProfessionRepository);
     }
 }

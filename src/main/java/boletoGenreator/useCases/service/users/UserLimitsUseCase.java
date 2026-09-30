@@ -6,14 +6,15 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import boletoGenreator.domain.model.limits.PreLimitsDTO;
-import boletoGenreator.domain.model.users.UserLimitsDTO;
 import boletoGenreator.infrastructure.repository.BankBilletsRepository;
 import boletoGenreator.infrastructure.repository.contracts.ContractBilletsRepository;
 import boletoGenreator.infrastructure.repository.contracts.ContractRepository;
+import boletoGenreator.infrastructure.repository.user.UserProfessionRepository;
 import boletoGenreator.infrastructure.repository.user.UserScoreRepository;
 import boletoGenreator.useCases.UseCase;
 import boletoGenreator.useCases.entity.EntityBankBillet;
 import boletoGenreator.useCases.entity.contracts.EntityContracts;
+import boletoGenreator.useCases.entity.user.EntityUserProfession;
 import boletoGenreator.useCases.entity.user.EntityUserScore;
 import jakarta.transaction.Transactional;
 import lombok.Value;
@@ -24,12 +25,14 @@ public class UserLimitsUseCase implements UseCase<UserLimitsUseCase.InputValues,
     private final ContractRepository contractRepository;
     private final ContractBilletsRepository contractBilletsRepository;
     private final BankBilletsRepository bankBilletsRepository;
+    private final UserProfessionRepository userProfessionRepository;
 
-    public UserLimitsUseCase(UserScoreRepository userScoreRepository, BankBilletsRepository bankBilletsRepository, ContractBilletsRepository contractBilletsRepository,  ContractRepository contractRepository){
+    public UserLimitsUseCase(UserScoreRepository userScoreRepository, BankBilletsRepository bankBilletsRepository, ContractBilletsRepository contractBilletsRepository,  ContractRepository contractRepository, UserProfessionRepository userProfessionRepository){
         this.userScoreRepository = userScoreRepository;
         this.bankBilletsRepository = bankBilletsRepository;
         this.contractBilletsRepository = contractBilletsRepository;
         this.contractRepository = contractRepository;
+        this.userProfessionRepository = userProfessionRepository;
     }
 
     @Override 
@@ -38,25 +41,27 @@ public class UserLimitsUseCase implements UseCase<UserLimitsUseCase.InputValues,
 
         Long idUser = input.getIdUser();
         
-        UserLimitsDTO limitsDTO = userScoreRepository.findUserScore(idUser)
+        EntityUserScore score = userScoreRepository.findByUserFromScore(idUser)
         .orElseThrow(() -> new RuntimeException("user or score not found"));
+
+        EntityUserProfession profession = userProfessionRepository.findByUserByProfession(idUser)
+        .orElseThrow(() -> new RuntimeException("user or profession not found"));
 
         LocalDateTime monthAgo = LocalDateTime.now().minusMonths(1);
 
-        Boolean recalculateScore = limitsDTO.getScore().getLastChange().isBefore(monthAgo);
+        Boolean recalculateScore = score.getLastChange().isBefore(monthAgo);
 
         if(recalculateScore){
             try {
-                limitsDTO.setScore(CalculateClientScore(idUser, limitsDTO));
+                score = CalculateClientScore(idUser, score);
             } catch (Exception e) {
                 throw new RuntimeException("exception on the limitsUseCase " + e.getMessage());
             } 
         }
 
-        EntityUserScore score = limitsDTO.getScore();
         String paymentSituation = score.getPaymentSituation();
 
-        PreLimitsDTO limits = calculateLoanAndInstallments(paymentSituation, limitsDTO.getSalary());
+        PreLimitsDTO limits = calculateLoanAndInstallments(paymentSituation, profession.getSalary());
 
         return new OutPutValues(limits);
     }
@@ -72,7 +77,7 @@ public class UserLimitsUseCase implements UseCase<UserLimitsUseCase.InputValues,
         private PreLimitsDTO dto;
     }
 
-    public EntityUserScore CalculateClientScore(Long idUser, UserLimitsDTO score) throws Exception{
+    public EntityUserScore CalculateClientScore(Long idUser, EntityUserScore score) throws Exception{
          try {
             LocalDateTime timeCap = LocalDateTime.now().minusMonths(6);
             List<EntityContracts> contracts = contractRepository.findContractsWithCap(idUser, timeCap);
@@ -129,15 +134,13 @@ public class UserLimitsUseCase implements UseCase<UserLimitsUseCase.InputValues,
                     throw new RuntimeException("Fail on the payment simulation calculation");
                 }
 
-                EntityUserScore scoreEntity = score.getScore();
-
-                scoreEntity.setLastChange(LocalDateTime.now()); 
-                scoreEntity.setPaymentSituation(paymentSituation);
-                scoreEntity.setScoreClient(finalBalance);
+                score.setLastChange(LocalDateTime.now()); 
+                score.setPaymentSituation(paymentSituation);
+                score.setScoreClient(finalBalance);
                 
-                userScoreRepository.save(scoreEntity);
+                userScoreRepository.save(score);
 
-                return scoreEntity;
+                return score;
             }
 
             throw new RuntimeException("user dosn't ");
