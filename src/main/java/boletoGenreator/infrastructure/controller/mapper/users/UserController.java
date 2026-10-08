@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import boletoGenreator.domain.model.limits.PreLimitsDTO;
+import boletoGenreator.domain.model.users.UserLimitsResponse;
 import boletoGenreator.domain.model.users.UserPageResponse;
 import boletoGenreator.domain.model.users.UserSearch;
 import boletoGenreator.useCases.ServiceExecute;
@@ -48,11 +48,11 @@ public class UserController implements UserResource {
     }
 
     @Override 
-    public CompletableFuture<PreLimitsDTO> pullUserLimits(String idUser){
+    public CompletableFuture<UserLimitsResponse> pullUserLimits(String idUser){
 
         return ServiceExecute.execute(
             userLimitsUseCase, 
             new UserLimitsUseCase.InputValues(Long.parseLong(idUser)), 
-            (output) -> output.getDto());
+            (output) -> UserLimitsResponse.from(output.getDto(), output.getUser()));
     }
 }

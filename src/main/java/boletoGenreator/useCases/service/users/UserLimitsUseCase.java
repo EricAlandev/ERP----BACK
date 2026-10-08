@@ -10,10 +10,12 @@ import boletoGenreator.infrastructure.repository.BankBilletsRepository;
 import boletoGenreator.infrastructure.repository.contracts.ContractBilletsRepository;
 import boletoGenreator.infrastructure.repository.contracts.ContractRepository;
 import boletoGenreator.infrastructure.repository.user.UserProfessionRepository;
+import boletoGenreator.infrastructure.repository.user.UserRepository;
 import boletoGenreator.infrastructure.repository.user.UserScoreRepository;
 import boletoGenreator.useCases.UseCase;
 import boletoGenreator.useCases.entity.EntityBankBillet;
 import boletoGenreator.useCases.entity.contracts.EntityContracts;
+import boletoGenreator.useCases.entity.user.EntityUser;
 import boletoGenreator.useCases.entity.user.EntityUserProfession;
 import boletoGenreator.useCases.entity.user.EntityUserScore;
 import jakarta.transaction.Transactional;
@@ -26,13 +28,15 @@ public class UserLimitsUseCase implements UseCase<UserLimitsUseCase.InputValues,
     private final ContractBilletsRepository contractBilletsRepository;
     private final BankBilletsRepository bankBilletsRepository;
     private final UserProfessionRepository userProfessionRepository;
+    private final UserRepository userRepository;
 
-    public UserLimitsUseCase(UserScoreRepository userScoreRepository, BankBilletsRepository bankBilletsRepository, ContractBilletsRepository contractBilletsRepository,  ContractRepository contractRepository, UserProfessionRepository userProfessionRepository){
+    public UserLimitsUseCase(UserScoreRepository userScoreRepository, BankBilletsRepository bankBilletsRepository, ContractBilletsRepository contractBilletsRepository,  ContractRepository contractRepository, UserProfessionRepository userProfessionRepository, UserRepository userRepository){
         this.userScoreRepository = userScoreRepository;
         this.bankBilletsRepository = bankBilletsRepository;
         this.contractBilletsRepository = contractBilletsRepository;
         this.contractRepository = contractRepository;
         this.userProfessionRepository = userProfessionRepository;
+        this.userRepository = userRepository;
     }
 
     @Override 
@@ -40,7 +44,9 @@ public class UserLimitsUseCase implements UseCase<UserLimitsUseCase.InputValues,
     public OutPutValues execute(InputValues input){
 
         Long idUser = input.getIdUser();
-        
+        EntityUser user = userRepository.findById(idUser)
+        .orElseThrow(() -> new RuntimeException(""));
+
         EntityUserScore score = userScoreRepository.findByUserFromScore(idUser)
         .orElseThrow(() -> new RuntimeException("user or score not found"));
 
@@ -63,7 +69,7 @@ public class UserLimitsUseCase implements UseCase<UserLimitsUseCase.InputValues,
 
         PreLimitsDTO limits = calculateLoanAndInstallments(paymentSituation, profession.getSalary());
 
-        return new OutPutValues(limits);
+        return new OutPutValues(limits, user);
     }
 
 
@@ -75,6 +81,7 @@ public class UserLimitsUseCase implements UseCase<UserLimitsUseCase.InputValues,
     @Value 
     public static class OutPutValues implements  UseCase.OutPutValues{
         private PreLimitsDTO dto;
+        private EntityUser user;
     }
 
     public EntityUserScore CalculateClientScore(Long idUser, EntityUserScore score) throws Exception{
@@ -179,8 +186,8 @@ public class UserLimitsUseCase implements UseCase<UserLimitsUseCase.InputValues,
                 throw new RuntimeException("User not allowed to make loans");
             }
 
-            BigDecimal maxLoan = salary.add(salary.multiply(percentLoan));
-
+            BigDecimal maxLoan = salary.add(salary.multiply(percentLoan)).setScale(2, RoundingMode.CEILING);
+            
             Long quantityInstallments = 2L;
 
             if(!"BC".equals(paymentSituation)){
