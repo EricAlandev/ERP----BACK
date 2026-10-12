@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import boletoGenreator.domain.model.limits.PreLimitsDTO;
+import boletoGenreator.infrastructure.errors.GenericException;
 import boletoGenreator.infrastructure.repository.BankBilletsRepository;
 import boletoGenreator.infrastructure.repository.contracts.ContractBilletsRepository;
 import boletoGenreator.infrastructure.repository.contracts.ContractRepository;
@@ -28,7 +29,7 @@ public class UserLimitsUseCase implements UseCase<UserLimitsUseCase.InputValues,
     private final ContractBilletsRepository contractBilletsRepository;
     private final BankBilletsRepository bankBilletsRepository;
     private final UserProfessionRepository userProfessionRepository;
-    private final UserRepository userRepository;
+    private final UserRepository userRepository; 
 
     public UserLimitsUseCase(UserScoreRepository userScoreRepository, BankBilletsRepository bankBilletsRepository, ContractBilletsRepository contractBilletsRepository,  ContractRepository contractRepository, UserProfessionRepository userProfessionRepository, UserRepository userRepository){
         this.userScoreRepository = userScoreRepository;
@@ -45,13 +46,13 @@ public class UserLimitsUseCase implements UseCase<UserLimitsUseCase.InputValues,
 
         Long idUser = input.getIdUser();
         EntityUser user = userRepository.findById(idUser)
-        .orElseThrow(() -> new RuntimeException(""));
+        .orElseThrow(() -> new GenericException("user not found"));
 
         EntityUserScore score = userScoreRepository.findByUserFromScore(idUser)
-        .orElseThrow(() -> new RuntimeException("user or score not found"));
+        .orElseThrow(() -> new GenericException("user or score not found"));
 
         EntityUserProfession profession = userProfessionRepository.findByUserByProfession(idUser)
-        .orElseThrow(() -> new RuntimeException("user or profession not found"));
+        .orElseThrow(() -> new GenericException("user or profession not found"));
 
         LocalDateTime monthAgo = LocalDateTime.now().minusMonths(1);
 
@@ -61,7 +62,7 @@ public class UserLimitsUseCase implements UseCase<UserLimitsUseCase.InputValues,
             try {
                 score = CalculateClientScore(idUser, score);
             } catch (Exception e) {
-                throw new RuntimeException("exception on the limitsUseCase " + e.getMessage());
+                throw new GenericException("exception on the limitsUseCase " + e.getMessage());
             } 
         }
 
@@ -117,7 +118,7 @@ public class UserLimitsUseCase implements UseCase<UserLimitsUseCase.InputValues,
                     }
 
                     else{
-                        throw new RuntimeException("Error during the verifycation of stats");
+                        throw new GenericException("Error during the verifycation of stats");
                     }
                 }
 
@@ -138,7 +139,7 @@ public class UserLimitsUseCase implements UseCase<UserLimitsUseCase.InputValues,
                 }
 
                 if(paymentSituation == null){
-                    throw new RuntimeException("Fail on the payment simulation calculation");
+                    throw new GenericException("Fail on the payment simulation calculation");
                 }
 
                 score.setLastChange(LocalDateTime.now()); 
@@ -183,7 +184,7 @@ public class UserLimitsUseCase implements UseCase<UserLimitsUseCase.InputValues,
             }
 
             if(BigDecimal.ZERO.compareTo(percentLoan) == 0){
-                throw new RuntimeException("User not allowed to make loans");
+                throw new GenericException("User not allowed to make loans");
             }
 
             BigDecimal maxLoan = salary.add(salary.multiply(percentLoan)).setScale(2, RoundingMode.CEILING);
@@ -208,7 +209,7 @@ public class UserLimitsUseCase implements UseCase<UserLimitsUseCase.InputValues,
             
 
         } catch (Exception e) {
-           throw new RuntimeException(e.getMessage());
+           throw new GenericException(e.getMessage());
         }
     }
 }
