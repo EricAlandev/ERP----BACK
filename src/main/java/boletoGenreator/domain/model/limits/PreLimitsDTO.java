@@ -15,7 +15,7 @@ import lombok.Setter;
 @AllArgsConstructor 
 public class PreLimitsDTO {
     
-
     private BigDecimal maxLoan;
     private Long quantityInstallments; 
+    private String paymentSituation;
 }

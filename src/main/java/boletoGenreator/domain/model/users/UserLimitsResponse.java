@@ -27,6 +27,7 @@ public class UserLimitsResponse {
     @Builder 
     public static class UserLimits{
         private String email;
+        private String paymentSituation;
         private String typeUser;
         private String cic;
         private String gender;
@@ -39,6 +40,7 @@ public class UserLimitsResponse {
         .quantityInstallments(dto.getQuantityInstallments())
         .user(UserLimits.builder()
             .email(vanillaUser.getEmail())
+            .paymentSituation(dto.getPaymentSituation())
             .gender(vanillaUser.getGender())
             .cic(vanillaUser.getCic())
             .typeUser(vanillaUser.getTypeUser())

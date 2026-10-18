@@ -204,6 +204,7 @@ public class UserLimitsUseCase implements UseCase<UserLimitsUseCase.InputValues,
             PreLimitsDTO limitsData = new PreLimitsDTO();
             limitsData.setMaxLoan(maxLoan);
             limitsData.setQuantityInstallments(quantityInstallments);
+            limitsData.setPaymentSituation(paymentSituation);
 
             return limitsData;
             

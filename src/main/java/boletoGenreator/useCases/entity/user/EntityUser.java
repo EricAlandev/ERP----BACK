@@ -41,6 +41,8 @@ public class EntityUser {
     @Column(length = 1)
     private String gender;
 
+    //P - person
+    //C - company
     @Column(length = 1, name="type_user")
     private String typeUser;
 
